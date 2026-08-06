@@ -65,6 +65,11 @@
             border-radius: 0.75rem; padding: 0.75rem 1rem; color: white; transition: all 0.2s;
         }
         .input-field:focus { outline: none; border-color: var(--museum-gold); background: rgba(39, 39, 42, 0.9); box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2); }
+        
+        .teacher-input {
+            width: 100%; background: #fff; border: 1px solid #d4d4d8; border-radius: 0.5rem; padding: 0.5rem; color: #18181b; transition: all 0.2s;
+        }
+        .teacher-input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
 
         /* Print */
         @media print {
@@ -75,7 +80,6 @@
             .no-print { display: none !important; }
         }
 
-        /* SweetAlert2 Theme Override for Museum */
         .swal2-popup { font-family: 'Sarabun', sans-serif !important; border-radius: 1.5rem !important; }
         
         /* Gallery Grid */
@@ -92,7 +96,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <!-- Logo -->
-                <div class="flex items-center cursor-pointer" onclick="switchScreen(currentRole === 'teacher' ? 'screen-teacher' : 'screen-exhibition')">
+                <div class="flex items-center cursor-pointer" onclick="goHome()">
                     <div class="w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-600 rounded flex items-center justify-center text-black font-bold title-font text-lg mr-3 shadow-lg shadow-amber-500/20">M</div>
                     <span class="font-bold text-lg title-font tracking-wider text-white hidden sm:block">MUSEUM<span class="text-amber-500">PORTAL</span></span>
                 </div>
@@ -100,8 +104,7 @@
                 <!-- Student Menu (Hidden for Teachers) -->
                 <div id="nav-student-menu" class="hidden flex-1 justify-center gap-2 md:gap-6 px-4">
                     <button onclick="switchScreen('screen-exhibition')" class="text-sm font-medium text-zinc-300 hover:text-amber-400 transition-colors">บทเรียน</button>
-                    <button onclick="switchScreen('screen-submit-poster')" class="text-sm font-medium text-zinc-300 hover:text-amber-400 transition-colors">ส่งโปสเตอร์</button>
-                    <button onclick="switchScreen('screen-gallery')" class="text-sm font-medium text-amber-500 hover:text-amber-400 transition-colors">แกลเลอรีผลงาน</button>
+                    <button onclick="switchScreen('screen-gallery')" class="text-sm font-medium text-amber-500 hover:text-amber-400 transition-colors">นิทรรศการผลงาน</button>
                 </div>
 
                 <!-- User Profile & Logout -->
@@ -153,11 +156,11 @@
                 <!-- Student Login -->
                 <div id="form-student" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-zinc-400 mb-1.5">ชื่อ-นามสกุล (เพื่อใช้ในการทำใบงาน)</label>
+                        <label class="block text-sm font-medium text-zinc-400 mb-1.5">ชื่อ-นามสกุล (เพื่อใช้บันทึกคะแนน)</label>
                         <input type="text" id="login-student-name" class="input-field" placeholder="ด.ช. / ด.ญ. ..." onkeypress="handleEnter(event, 'student')">
                     </div>
                     <button onclick="loginAs('student')" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-amber-900/50 mt-2">
-                        เข้าชมนิทรรศการ
+                        เข้าสู่บทเรียน
                     </button>
                 </div>
 
@@ -165,7 +168,6 @@
                 <div id="form-teacher" class="space-y-4 hidden">
                     <div>
                         <label class="block text-sm font-medium text-zinc-400 mb-1.5">รหัสผ่านสำหรับคุณครู</label>
-                        <!-- เอาคำใบ้ (1234) ออก -->
                         <input type="password" id="login-teacher-pass" class="input-field" placeholder="กรอกรหัสผ่าน" onkeypress="handleEnter(event, 'teacher')">
                     </div>
                     <button onclick="loginAs('teacher')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-blue-900/50 mt-2">
@@ -176,9 +178,31 @@
         </div>
     </div>
 
+    <!-- ==================== QUIZ SCREEN (PRE & POST) ==================== -->
+    <div id="screen-quiz" class="app-screen bg-zinc-950">
+        <div class="min-h-screen pt-24 pb-12 px-4 flex justify-center items-start relative z-10">
+            <div class="max-w-3xl w-full glass-panel bg-zinc-900/90 rounded-[2rem] p-8 md:p-12 shadow-2xl border-t-4 border-t-amber-500">
+                <div class="text-center mb-8 border-b border-white/10 pb-6">
+                    <span id="quiz-badge" class="inline-block py-1 px-3 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm font-semibold tracking-widest uppercase mb-4">
+                        PRE-TEST
+                    </span>
+                    <h2 id="quiz-title" class="text-3xl font-bold text-white mb-2">แบบทดสอบก่อนเรียน</h2>
+                    <p class="text-zinc-400">อารยธรรมเมโสโปเตเมีย จำนวน ๕ ข้อ</p>
+                </div>
+
+                <div id="quiz-container" class="space-y-8">
+                    <!-- Questions injected by JS -->
+                </div>
+
+                <button onclick="submitQuiz()" class="w-full mt-8 bg-amber-500 hover:bg-amber-400 text-black font-bold text-lg py-4 rounded-xl shadow-lg transition-all">
+                    ส่งคำตอบ
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ==================== EXHIBITION SCREEN (STUDENT) ==================== -->
     <div id="screen-exhibition" class="app-screen">
-        
         <!-- Hero Section -->
         <header class="hero-bg pt-32 pb-24 md:pt-40 md:pb-32 px-4 text-center relative border-b border-white/10 mt-16">
             <div class="max-w-4xl mx-auto relative z-10">
@@ -197,7 +221,7 @@
         <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             
             <!-- Map Section -->
-            <section class="mb-20">
+            <section class="mb-16">
                 <div class="flex items-center gap-4 mb-8">
                     <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center shadow-lg shadow-amber-500/20 text-white">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
@@ -208,18 +232,31 @@
                     </div>
                 </div>
                 
-                <div class="glass-panel p-2 rounded-3xl relative group shadow-[0_0_30px_rgba(245,158,11,0.15)]">
+                <div class="glass-panel p-2 rounded-3xl relative group shadow-[0_0_30px_rgba(245,158,11,0.15)] border border-amber-500/20">
                     <div class="w-full h-[400px] rounded-[1.25rem] overflow-hidden bg-zinc-900 relative">
-                        <!-- ปุ่มเปิดแผนที่ฉบับเต็ม -->
                         <a href="https://maps.app.goo.gl/tvbJBUBAVUd8Mi8x6" target="_blank" class="absolute top-4 right-4 z-10 bg-amber-500 hover:bg-amber-400 text-black font-semibold px-4 py-2 rounded-xl shadow-lg flex items-center transition-transform hover:scale-105">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                            เปิดพิกัดสถานที่จริงบน Google Maps
+                            เปิดพิกัดสถานที่จริง
                         </a>
-                        <!-- แผนที่ฝังจำลอง -->
                         <iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" 
                             src="https://maps.google.com/maps?q=33.3152,44.3661+(ลุ่มแม่น้ำไทกริส-ยูเฟรติส%20อารยธรรมเมโสโปเตเมีย)&t=k&z=6&ie=UTF8&iwloc=B&output=embed"
                             style="filter: contrast(1.1) brightness(0.9) saturate(1.2);" title="Google Earth Mesopotamia">
                         </iframe>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Group Activity Prompt -->
+            <section class="mb-16">
+                <div class="bg-gradient-to-r from-blue-900/40 to-cyan-900/40 border border-blue-500/30 rounded-3xl p-8 shadow-lg shadow-blue-900/20 flex flex-col md:flex-row items-center gap-6">
+                    <div class="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0 border border-blue-400/50">
+                        <span class="text-3xl">👥</span>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-white mb-2">ภารกิจนักสำรวจ (กิจกรรมกลุ่ม/คู่)</h3>
+                        <p class="text-zinc-300 leading-relaxed">
+                            ให้นักเรียนจับคู่หรือรวมกลุ่มกัน <strong>สำรวจมรดกทางวัฒนธรรมทั้ง 4 ชิ้นด้านล่าง</strong> ร่วมกันอ่าน วิเคราะห์ และพูดคุยแลกเปลี่ยนความคิดเห็นเกี่ยวกับความสำคัญของมรดกแต่ละชิ้น เพื่อเตรียมตัวสำหรับการทำใบงานและออกแบบผลงานในขั้นตอนต่อไป
+                        </p>
                     </div>
                 </div>
             </section>
@@ -240,153 +277,210 @@
                     <!-- Cards -->
                     <div class="artifact-card glass-panel rounded-2xl cursor-pointer group flex flex-col relative overflow-hidden" onclick="openModal('cuneiform')">
                         <div class="aspect-[4/3] w-full overflow-hidden relative rounded-t-[15px]">
-                            <img src="1.jpg" class="artifact-image w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            <img src="https://placehold.co/600x450/2b1a10/e4e4e7?text=Cuneiform" class="artifact-image w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                             <span class="absolute top-3 left-3 bg-black/60 backdrop-blur text-amber-400 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30">ชาวสุเมเรียน</span>
                         </div>
                         <div class="p-5 flex-1 relative z-10 bg-gradient-to-t from-zinc-900 to-transparent">
                             <h3 class="text-lg font-bold text-white mb-1 group-hover:text-amber-400 transition-colors">อักษรคูนิฟอร์ม</h3>
-                            <p class="text-zinc-400 text-sm line-clamp-2">ระบบการเขียนที่เก่าแก่ที่สุดในโลก จารึกลงบนแผ่นดินเหนียว</p>
+                            <p class="text-zinc-400 text-sm line-clamp-2">ระบบการเขียนที่เก่าแก่ที่สุดในโลก</p>
                         </div>
                     </div>
-
                     <div class="artifact-card glass-panel rounded-2xl cursor-pointer group flex flex-col relative overflow-hidden" onclick="openModal('ziggurat')">
                         <div class="aspect-[4/3] w-full overflow-hidden relative rounded-t-[15px]">
-                            <img src="2.jpg" class="artifact-image w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            <img src="https://placehold.co/600x450/4a2912/e4e4e7?text=Ziggurat" class="artifact-image w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                             <span class="absolute top-3 left-3 bg-black/60 backdrop-blur text-amber-400 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30">สถาปัตยกรรม</span>
                         </div>
                         <div class="p-5 flex-1 relative z-10 bg-gradient-to-t from-zinc-900 to-transparent">
                             <h3 class="text-lg font-bold text-white mb-1 group-hover:text-amber-400 transition-colors">ซิกกูแรต</h3>
-                            <p class="text-zinc-400 text-sm line-clamp-2">ศาสนสถานทรงพีระมิดขั้นบันได สร้างจากอิฐตากแห้ง</p>
+                            <p class="text-zinc-400 text-sm line-clamp-2">ศาสนสถานทรงพีระมิดขั้นบันได</p>
                         </div>
                     </div>
-
                     <div class="artifact-card glass-panel rounded-2xl cursor-pointer group flex flex-col relative overflow-hidden" onclick="openModal('hammurabi')">
                         <div class="aspect-[4/3] w-full overflow-hidden relative rounded-t-[15px]">
-                            <img src="3.jpg" class="artifact-image w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            <img src="https://placehold.co/600x450/111827/e4e4e7?text=Code+of+Hammurabi" class="artifact-image w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                             <span class="absolute top-3 left-3 bg-black/60 backdrop-blur text-amber-400 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30">บาบิโลน</span>
                         </div>
                         <div class="p-5 flex-1 relative z-10 bg-gradient-to-t from-zinc-900 to-transparent">
                             <h3 class="text-lg font-bold text-white mb-1 group-hover:text-amber-400 transition-colors">กฎหมายฮัมมูราบี</h3>
-                            <p class="text-zinc-400 text-sm line-clamp-2">ประมวลกฎหมายที่ยึดหลัก "ตาต่อตา ฟันต่อฟัน"</p>
+                            <p class="text-zinc-400 text-sm line-clamp-2">หลัก "ตาต่อตา ฟันต่อฟัน"</p>
                         </div>
                     </div>
-
                     <div class="artifact-card glass-panel rounded-2xl cursor-pointer group flex flex-col relative overflow-hidden" onclick="openModal('wheel')">
                         <div class="aspect-[4/3] w-full overflow-hidden relative rounded-t-[15px]">
-                            <img src="4.jpg" class="artifact-image w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            <img src="https://placehold.co/600x450/2a3320/e4e4e7?text=The+Wheel" class="artifact-image w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                             <span class="absolute top-3 left-3 bg-black/60 backdrop-blur text-amber-400 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30">วิทยาการ</span>
                         </div>
                         <div class="p-5 flex-1 relative z-10 bg-gradient-to-t from-zinc-900 to-transparent">
                             <h3 class="text-lg font-bold text-white mb-1 group-hover:text-amber-400 transition-colors">ล้อและชลประทาน</h3>
-                            <p class="text-zinc-400 text-sm line-clamp-2">นวัตกรรมที่เปลี่ยนโลกการขนส่งและการเกษตร</p>
+                            <p class="text-zinc-400 text-sm line-clamp-2">นวัตกรรมที่เปลี่ยนโลก</p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Call to Action (Worksheet & Canva) -->
-            <section class="max-w-4xl mx-auto mb-10">
-                <div class="grid md:grid-cols-2 gap-6">
-                    <!-- Worksheet Box -->
-                    <div class="p-8 rounded-[2rem] bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700 shadow-xl text-center flex flex-col justify-center">
-                        <h3 class="text-2xl font-bold text-white mb-2">ขั้นที่ 1: ทำใบงานสรุปความรู้</h3>
-                        <p class="text-zinc-400 mb-6 text-sm">ทดสอบความเข้าใจพื้นฐานก่อนเริ่มสร้างสรรค์ผลงาน</p>
-                        <button onclick="switchScreen('screen-worksheet')" class="w-full bg-zinc-100 hover:bg-white text-black font-bold text-lg py-3 rounded-xl shadow-lg transition-all hover:-translate-y-1">
-                            📝 เปิดใบงานออนไลน์
+            <!-- Learning Path Tasks -->
+            <section class="mb-10">
+                <h2 class="text-2xl font-bold text-white mb-6 text-center">เส้นทางการเรียนรู้ของคุณ</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    
+                    <!-- Task 1: Indiv Worksheet -->
+                    <div class="p-6 rounded-[2rem] bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700 shadow-xl text-center flex flex-col">
+                        <div class="w-12 h-12 bg-zinc-700 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">📝</div>
+                        <h3 class="text-xl font-bold text-white mb-2">1. ใบงานเดี่ยว</h3>
+                        <p class="text-zinc-400 text-sm mb-6 flex-1">ทดสอบความเข้าใจเบื้องต้น</p>
+                        <button id="btn-do-worksheet-indiv" onclick="switchScreen('screen-worksheet-indiv')" class="w-full bg-zinc-100 hover:bg-white text-black font-bold py-3 rounded-xl transition-all">
+                            เปิดใบงาน
                         </button>
                     </div>
 
-                    <!-- Canva Box -->
-                    <div class="p-8 rounded-[2rem] bg-gradient-to-br from-indigo-900 to-purple-900 border border-purple-500/30 shadow-xl text-center flex flex-col justify-center relative overflow-hidden">
-                        <div class="absolute -right-10 -top-10 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl"></div>
-                        <h3 class="text-2xl font-bold text-white mb-2 relative z-10">ขั้นที่ 2: ออกแบบโปสเตอร์</h3>
-                        <p class="text-purple-200 mb-6 text-sm relative z-10">ใช้ Canva สร้างโปสเตอร์ "1 มรดกเมโสโปเตเมียพลิกโลก"</p>
-                        
-                        <div class="flex flex-col sm:flex-row gap-3 relative z-10">
-                            <a href="https://www.canva.com/" target="_blank" class="flex-1 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 text-white font-bold py-3 rounded-xl shadow-lg transition-all hover:-translate-y-1">
-                                🎨 เปิดเว็บ Canva
-                            </a>
-                            <button onclick="switchScreen('screen-submit-poster')" class="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-bold py-3 rounded-xl shadow-lg transition-all hover:-translate-y-1">
-                                📤 ส่งผลงาน
-                            </button>
+                    <!-- Task 2: Group Worksheet -->
+                    <div class="p-6 rounded-[2rem] bg-gradient-to-br from-blue-900/40 to-cyan-900/40 border border-blue-500/30 shadow-xl text-center flex flex-col">
+                        <div class="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">👥</div>
+                        <h3 class="text-xl font-bold text-white mb-2">2. ใบงานกลุ่ม</h3>
+                        <p class="text-blue-200 text-sm mb-6 flex-1">วางแผนสร้างสรรค์ผลงาน</p>
+                        <button id="btn-do-worksheet-group" onclick="switchScreen('screen-worksheet-group')" class="w-full bg-blue-500 hover:bg-blue-400 text-black font-bold py-3 rounded-xl transition-all">
+                            เปิดใบงานกลุ่ม
+                        </button>
+                    </div>
+
+                    <!-- Task 3: Poster -->
+                    <div class="p-6 rounded-[2rem] bg-gradient-to-br from-indigo-900/80 to-purple-900/80 border border-purple-500/30 shadow-xl text-center flex flex-col relative overflow-hidden">
+                        <div class="w-12 h-12 bg-purple-500/20 border border-purple-400/50 rounded-full flex items-center justify-center mx-auto mb-4 text-xl z-10">🎨</div>
+                        <h3 class="text-xl font-bold text-white mb-2 z-10">3. สร้างผลงาน</h3>
+                        <p class="text-purple-200 text-sm mb-6 flex-1 z-10">ออกแบบโปสเตอร์และอัปโหลด</p>
+                        <div class="flex gap-2 z-10">
+                            <a href="https://www.canva.com/" target="_blank" class="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 rounded-xl text-sm flex items-center justify-center transition-all">Canva</a>
+                            <button id="btn-do-poster" onclick="switchScreen('screen-submit-poster')" class="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-bold py-2 rounded-xl text-sm transition-all">ส่งผลงาน</button>
                         </div>
                     </div>
+
+                    <!-- Task 4: Post-test -->
+                    <div class="p-6 rounded-[2rem] bg-gradient-to-br from-green-900/40 to-emerald-900/40 border border-green-500/30 shadow-xl text-center flex flex-col">
+                        <div class="w-12 h-12 bg-green-500/20 border border-green-400/50 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">🎓</div>
+                        <h3 class="text-xl font-bold text-white mb-2">4. ทดสอบหลังเรียน</h3>
+                        <p class="text-green-200 text-sm mb-6 flex-1">ทำเมื่อส่งงานครบ 3 ชิ้น</p>
+                        <button id="btn-do-posttest" onclick="startQuiz('post')" class="w-full bg-zinc-700 text-zinc-400 font-bold py-3 rounded-xl cursor-not-allowed transition-all" disabled>
+                            🔒 ล็อก
+                        </button>
+                    </div>
+
                 </div>
             </section>
-
         </main>
     </div>
 
-    <!-- ==================== WORKSHEET SCREEN ==================== -->
-    <div id="screen-worksheet" class="app-screen bg-zinc-950">
+    <!-- ==================== INDIVIDUAL WORKSHEET SCREEN ==================== -->
+    <div id="screen-worksheet-indiv" class="app-screen bg-zinc-950">
         <div class="min-h-screen pt-24 pb-12 px-4 flex justify-center items-start relative z-10">
             <div class="max-w-3xl w-full glass-panel bg-zinc-900/90 rounded-[2rem] p-8 md:p-12 shadow-2xl border-t-4 border-t-amber-500 relative">
-                
                 <div class="flex items-center justify-between mb-8 border-b border-white/10 pb-6">
                     <div>
-                        <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">ใบงานออนไลน์: แกะรอยเมโสโปเตเมีย</h2>
-                        <p class="text-amber-500 text-sm font-medium">ส่วนหนึ่งของการสร้างสรรค์ผลงาน Infographic</p>
+                        <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">ใบงานเดี่ยว: สำรวจเมโสโปเตเมีย</h2>
                     </div>
                     <button onclick="switchScreen('screen-exhibition')" class="p-2 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
-
-                <form id="worksheet-form" onsubmit="submitWorksheet(event)" class="space-y-8">
-                    <!-- Student Info Box -->
-                    <div class="bg-black/30 p-6 rounded-2xl border border-white/5">
-                        <h4 class="text-white font-medium mb-4 flex items-center"><svg class="w-4 h-4 mr-2 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg> ข้อมูลส่วนตัว</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-                            <div class="md:col-span-6">
-                                <label class="block text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-2">ชื่อ - นามสกุล</label>
-                                <input type="text" id="ws-name" required class="input-field bg-zinc-800/50" readonly>
+                <form id="worksheet-indiv-form" onsubmit="submitWorksheetIndiv(event)" class="space-y-8">
+                    <!-- Info Box -->
+                    <div class="bg-black/30 p-6 rounded-2xl border border-white/5 space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="md:col-span-2">
+                                <label class="block text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-2">ชื่อ-นามสกุล</label>
+                                <input type="text" id="ws-indiv-name" required class="input-field bg-zinc-800/50" readonly>
                             </div>
-                            <div class="md:col-span-3">
-                                <label class="block text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-2">ชั้น</label>
-                                <input type="text" id="ws-class" required class="input-field" placeholder="ม.6/1">
+                            <div>
+                                <label class="block text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-2">ระดับชั้น</label>
+                                <input type="text" id="ws-indiv-class" required class="input-field" placeholder="ม.6/1">
                             </div>
-                            <div class="md:col-span-3">
+                            <div>
                                 <label class="block text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-2">เลขที่</label>
-                                <input type="number" id="ws-number" required class="input-field" placeholder="1">
+                                <input type="number" id="ws-indiv-num" required class="input-field" placeholder="เลขที่">
                             </div>
                         </div>
                     </div>
-
                     <!-- Questions -->
                     <div class="space-y-6">
                         <div class="group">
-                            <label class="block text-white text-base font-medium mb-3 group-hover:text-amber-400 transition-colors">1. ใครคือผู้สร้าง "ซิกกูแรต" และสถานที่นี้มีความสำคัญอย่างไร?</label>
-                            <textarea id="ws-q1" required rows="3" class="input-field resize-none" placeholder="พิมพ์คำตอบของคุณ..."></textarea>
+                            <label class="block text-white text-base font-medium mb-3">1. อักษรคูนิฟอร์ม (Cuneiform) มีความสำคัญต่อประวัติศาสตร์อย่างไร?</label>
+                            <textarea id="ws-indiv-q1" required rows="2" class="input-field resize-none"></textarea>
                         </div>
                         <div class="group">
-                            <label class="block text-white text-base font-medium mb-3 group-hover:text-amber-400 transition-colors">2. หลักการ "ตาต่อตา ฟันต่อฟัน" ของกฎหมายฮัมมูราบี หมายถึงอะไร?</label>
-                            <textarea id="ws-q2" required rows="3" class="input-field resize-none" placeholder="พิมพ์คำตอบของคุณ..."></textarea>
+                            <label class="block text-white text-base font-medium mb-3">2. ใครคือผู้สร้าง "ซิกกูแรต" และสถานที่นี้สะท้อนความเชื่ออย่างไร?</label>
+                            <textarea id="ws-indiv-q2" required rows="2" class="input-field resize-none"></textarea>
                         </div>
                         <div class="group">
-                            <label class="block text-white text-base font-medium mb-3 group-hover:text-amber-400 transition-colors">3. "อักษรคูนิฟอร์ม" มีความสำคัญต่อพัฒนาการของประวัติศาสตร์โลกอย่างไร?</label>
-                            <textarea id="ws-q3" required rows="3" class="input-field resize-none" placeholder="พิมพ์คำตอบของคุณ..."></textarea>
+                            <label class="block text-white text-base font-medium mb-3">3. หลักการ "ตาต่อตา ฟันต่อฟัน" ของกฎหมายฮัมมูราบี หมายถึงอะไร?</label>
+                            <textarea id="ws-indiv-q3" required rows="2" class="input-field resize-none"></textarea>
+                        </div>
+                        <div class="group">
+                            <label class="block text-white text-base font-medium mb-3">4. "นวัตกรรมล้อ" ของชาวสุเมเรียนคือจุดเริ่มต้นของเทคโนโลยีอะไรบ้าง?</label>
+                            <textarea id="ws-indiv-q4" required rows="2" class="input-field resize-none"></textarea>
                         </div>
                     </div>
-
-                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold text-lg py-4 rounded-xl shadow-lg transition-all flex justify-center items-center">
-                        ส่งใบงาน
+                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold text-lg py-4 rounded-xl shadow-lg transition-all">
+                        ส่งใบงานเดี่ยว
                     </button>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- ==================== SUBMIT POSTER SCREEN (STUDENT) ==================== -->
+    <!-- ==================== GROUP WORKSHEET SCREEN ==================== -->
+    <div id="screen-worksheet-group" class="app-screen bg-zinc-950">
+        <div class="min-h-screen pt-24 pb-12 px-4 flex justify-center items-start relative z-10">
+            <div class="max-w-3xl w-full glass-panel bg-zinc-900/90 rounded-[2rem] p-8 md:p-12 shadow-2xl border-t-4 border-t-blue-500 relative">
+                <div class="flex items-center justify-between mb-8 border-b border-white/10 pb-6">
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">ใบงานกลุ่ม: แผนการออกแบบผลงาน</h2>
+                        <p class="text-blue-400 text-sm">กรอกเลขกลุ่มให้ตรงกับเพื่อน เพื่อรวมกลุ่มกัน</p>
+                    </div>
+                    <button onclick="switchScreen('screen-exhibition')" class="p-2 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <form id="worksheet-group-form" onsubmit="submitWorksheetGroup(event)" class="space-y-8">
+                    <!-- Info Box -->
+                    <div class="bg-black/30 p-6 rounded-2xl border border-white/5 space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-2">ชื่อผู้ส่ง (ตัวแทน)</label>
+                                <input type="text" id="ws-group-name" required class="input-field bg-zinc-800/50" readonly>
+                            </div>
+                            <div>
+                                <label class="block text-blue-400 text-xs font-bold uppercase tracking-wider mb-2">กลุ่มที่ / เลขกลุ่ม (สำคัญ)</label>
+                                <input type="text" id="ws-group-id" required class="input-field border-blue-500/50" placeholder="เช่น 1 หรือ A">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Questions -->
+                    <div class="space-y-6">
+                        <div class="bg-blue-900/20 p-5 rounded-xl border border-blue-500/20">
+                            <label class="block text-blue-400 text-base font-bold mb-3">🎨 วางแผนออกแบบโปสเตอร์: กลุ่มของท่านเลือกมรดกชิ้นใด และมีแนวคิดในการออกแบบอย่างไร?</label>
+                            <textarea id="ws-group-q1" required rows="4" class="input-field resize-none" placeholder="มรดกที่เลือก: ...&#10;แนวคิด: ..."></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-lg py-4 rounded-xl shadow-lg transition-all">
+                        ส่งใบงานกลุ่ม
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== SUBMIT POSTER SCREEN ==================== -->
     <div id="screen-submit-poster" class="app-screen bg-zinc-950">
         <div class="min-h-screen pt-24 pb-12 px-4 flex justify-center items-start relative z-10">
             <div class="max-w-2xl w-full glass-panel bg-zinc-900/90 rounded-[2rem] p-8 md:p-12 shadow-2xl border-t-4 border-t-purple-500">
                 <div class="flex items-center justify-between mb-8 border-b border-white/10 pb-6">
                     <div>
                         <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">ส่งผลงานโปสเตอร์</h2>
-                        <p class="text-purple-400 text-sm font-medium">อัปโหลดผลงานจาก Canva เพื่อนำไปจัดนิทรรศการ</p>
+                        <p class="text-purple-400 text-sm font-medium">อัปโหลดผลงานจาก Canva เพื่อจัดนิทรรศการ</p>
                     </div>
+                    <button onclick="switchScreen('screen-exhibition')" class="p-2 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
                 </div>
-
                 <form id="poster-form" onsubmit="submitPoster(event)" class="space-y-6">
                     <div>
                         <label class="block text-white text-base font-medium mb-3">1. อัปโหลดรูปภาพผลงาน (PNG / JPG)</label>
@@ -400,13 +494,11 @@
                             </label>
                         </div>
                     </div>
-
                     <div>
                         <label class="block text-white text-base font-medium mb-3">2. แนวคิดในการออกแบบ (1-2 ประโยค)</label>
-                        <textarea id="poster-concept" required rows="3" class="input-field resize-none" placeholder="เช่น เลือกทำเรื่องล้อ เพราะคิดว่า..."></textarea>
+                        <textarea id="poster-concept" required rows="3" class="input-field resize-none"></textarea>
                     </div>
-
-                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold text-lg py-4 rounded-xl shadow-lg transition-all flex justify-center items-center">
+                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold text-lg py-4 rounded-xl shadow-lg transition-all">
                         ส่งผลงานขึ้นนิทรรศการ
                     </button>
                 </form>
@@ -417,123 +509,160 @@
     <!-- ==================== GALLERY SCREEN (STUDENT & PUBLIC) ==================== -->
     <div id="screen-gallery" class="app-screen bg-zinc-950">
         <header class="pt-24 pb-12 px-4 text-center">
-            <h1 class="text-4xl md:text-5xl font-bold text-white title-font mb-4">
-                นิทรรศการ<span class="text-amber-500">ผลงานนักเรียน</span>
-            </h1>
+            <h1 class="text-4xl md:text-5xl font-bold text-white title-font mb-4">นิทรรศการ<span class="text-amber-500">ผลงานนักเรียน</span></h1>
             <p class="text-zinc-400 text-lg">รวมผลงานการออกแบบโปสเตอร์ "1 มรดกเมโสโปเตเมียพลิกโลก"</p>
         </header>
-
         <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-            <div id="gallery-container" class="masonry-grid">
-                <!-- Posters will be injected here -->
-            </div>
+            <div id="gallery-container" class="masonry-grid"></div>
             <div id="gallery-empty" class="text-center py-20 hidden">
                 <div class="text-6xl mb-4">🖼️</div>
                 <h3 class="text-xl text-zinc-300 font-bold">ยังไม่มีผลงานในนิทรรศการ</h3>
-                <p class="text-zinc-500 mt-2">ร่วมเป็นคนแรกที่ส่งผลงานเข้าประกวด!</p>
             </div>
         </main>
     </div>
 
     <!-- ==================== TEACHER DASHBOARD ==================== -->
     <div id="screen-teacher" class="app-screen bg-zinc-50 min-h-screen text-zinc-900">
-        <!-- Print Container (Hidden) -->
         <div id="printable-worksheet" class="hidden"></div>
-
         <div class="pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
             
             <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
                 <div>
-                    <h1 class="text-3xl font-bold text-zinc-900">ระบบจัดการห้องเรียน</h1>
-                    <p class="text-zinc-500 mt-1">อารยธรรมเมโสโปเตเมีย (In-Memory Database)</p>
+                    <h1 class="text-3xl font-bold text-zinc-900">ระบบจัดการห้องเรียน (LMS)</h1>
+                    <p class="text-zinc-500 mt-1">อารยธรรมเมโสโปเตเมีย</p>
                 </div>
-                
-                <div class="flex gap-4">
-                    <button onclick="switchTeacherTab('worksheet')" id="tab-btn-worksheet" class="bg-blue-50 px-5 py-3 rounded-xl border border-blue-200 shadow-sm flex items-center gap-4 transition-colors">
-                        <div class="text-sm text-blue-700 font-medium" id="tab-text-worksheet">ใบงานทั้งหมด</div>
-                        <div class="text-2xl font-bold text-blue-600" id="submission-count">0</div>
-                    </button>
-                    <button onclick="switchTeacherTab('gallery')" id="tab-btn-gallery" class="bg-white hover:bg-zinc-50 px-5 py-3 rounded-xl border border-zinc-200 shadow-sm flex items-center gap-4 transition-colors">
-                        <div class="text-sm text-zinc-500 font-medium" id="tab-text-gallery">โปสเตอร์ทั้งหมด</div>
-                        <div class="text-2xl font-bold text-amber-500" id="poster-count">0</div>
-                    </button>
+                <!-- Teacher Tabs -->
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="switchTeacherTab('overview')" id="tab-btn-overview" class="bg-indigo-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm">ภาพรวม & สอบ</button>
+                    <button onclick="switchTeacherTab('worksheet-indiv')" id="tab-btn-worksheet-indiv" class="bg-white text-zinc-600 hover:bg-zinc-50 px-4 py-2.5 rounded-lg text-sm font-medium border border-zinc-200 transition-colors">ใบงานเดี่ยว</button>
+                    <button onclick="switchTeacherTab('worksheet-group')" id="tab-btn-worksheet-group" class="bg-white text-zinc-600 hover:bg-zinc-50 px-4 py-2.5 rounded-lg text-sm font-medium border border-zinc-200 transition-colors">ใบงานกลุ่ม</button>
+                    <button onclick="switchTeacherTab('gallery')" id="tab-btn-gallery" class="bg-white text-zinc-600 hover:bg-zinc-50 px-4 py-2.5 rounded-lg text-sm font-medium border border-zinc-200 transition-colors">แกลเลอรี</button>
+                    <button onclick="switchTeacherTab('editquiz')" id="tab-btn-editquiz" class="bg-white text-zinc-600 hover:bg-zinc-50 px-4 py-2.5 rounded-lg text-sm font-medium border border-zinc-200 transition-colors">จัดการข้อสอบ</button>
                 </div>
             </div>
 
-            <!-- Data Table (Worksheets) -->
-            <div id="teacher-worksheet-section" class="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
+            <!-- TAB: Overview -->
+            <div id="teacher-overview-section" class="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
+                <div class="p-5 border-b border-zinc-200 bg-zinc-50/50"><h2 class="font-bold text-zinc-800">สรุปความคืบหน้านักเรียน</h2></div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[600px]">
+                        <thead>
+                            <tr class="bg-zinc-100/50 text-zinc-500 text-xs uppercase tracking-wider border-b border-zinc-200">
+                                <th class="px-6 py-4 font-semibold">ชื่อ - นามสกุล</th>
+                                <th class="px-6 py-4 font-semibold text-center">Pre-test</th>
+                                <th class="px-6 py-4 font-semibold text-center">ใบงานเดี่ยว</th>
+                                <th class="px-6 py-4 font-semibold text-center">ใบงานกลุ่ม</th>
+                                <th class="px-6 py-4 font-semibold text-center">โปสเตอร์</th>
+                                <th class="px-6 py-4 font-semibold text-center">Post-test</th>
+                            </tr>
+                        </thead>
+                        <tbody id="overview-table-body" class="divide-y divide-zinc-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB: Worksheet Indiv -->
+            <div id="teacher-worksheet-indiv-section" class="hidden bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse min-w-[800px]">
                         <thead>
                             <tr class="bg-zinc-100/50 text-zinc-500 text-xs uppercase tracking-wider border-b border-zinc-200">
                                 <th class="px-6 py-4 font-semibold">สถานะ</th>
                                 <th class="px-6 py-4 font-semibold">คะแนน</th>
-                                <th class="px-6 py-4 font-semibold">วันเวลาที่ส่ง</th>
                                 <th class="px-6 py-4 font-semibold">ชื่อ - นามสกุล</th>
-                                <th class="px-6 py-4 font-semibold">ชั้น/เลขที่</th>
                                 <th class="px-6 py-4 font-semibold text-right">การจัดการ</th>
                             </tr>
                         </thead>
-                        <tbody id="teacher-table-body" class="divide-y divide-zinc-100">
-                            <!-- Injected via JS -->
-                        </tbody>
+                        <tbody id="teacher-table-indiv-body" class="divide-y divide-zinc-100"></tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Gallery Section (Posters) -->
-            <div id="teacher-gallery-section" class="hidden">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200 mb-6 flex justify-between items-center">
-                    <div>
-                        <h2 class="text-xl font-bold text-zinc-800">นิทรรศการผลงานนักเรียน (Padlet View)</h2>
-                        <p class="text-sm text-zinc-500">คุณครูสามารถคลิกที่รูปภาพเพื่อเปิดเต็มจอสำหรับนำเสนอบนหน้าชั้นเรียนได้</p>
-                    </div>
-                </div>
-                <div id="teacher-gallery-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    <!-- Injected via JS -->
+            <!-- TAB: Worksheet Group -->
+            <div id="teacher-worksheet-group-section" class="hidden bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[800px]">
+                        <thead>
+                            <tr class="bg-zinc-100/50 text-zinc-500 text-xs uppercase tracking-wider border-b border-zinc-200">
+                                <th class="px-6 py-4 font-semibold">สถานะ</th>
+                                <th class="px-6 py-4 font-semibold">คะแนน</th>
+                                <th class="px-6 py-4 font-semibold">ข้อมูลกลุ่ม</th>
+                                <th class="px-6 py-4 font-semibold text-right">การจัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacher-table-group-body" class="divide-y divide-zinc-100"></tbody>
+                    </table>
                 </div>
             </div>
+
+            <!-- TAB: Gallery -->
+            <div id="teacher-gallery-section" class="hidden">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-zinc-200 mb-6">
+                    <h2 class="font-bold text-zinc-800">แกลเลอรีผลงาน (คลิกรูปเพื่อนำเสนอเต็มจอ)</h2>
+                </div>
+                <div id="teacher-gallery-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+            </div>
+
+            <!-- TAB: Edit Quiz -->
+            <div id="teacher-editquiz-section" class="hidden bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden p-6 md:p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-zinc-800">แก้ไขข้อสอบ (๕ ข้อ)</h2>
+                    <button onclick="saveQuizQuestions()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-2.5 rounded-xl transition-colors shadow-sm">บันทึกข้อสอบ</button>
+                </div>
+                <div id="edit-quiz-container" class="space-y-8">
+                    <!-- Edit form injected by JS -->
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <!-- Teacher Action Modal (View Worksheet) -->
+    <!-- Modals -->
+    <!-- View Worksheet Modal -->
     <div id="teacher-modal" class="modal-overlay fixed inset-0 bg-zinc-900/40 backdrop-blur-sm flex justify-center items-center p-4 no-print opacity-0 invisible z-[100] transition-all">
         <div class="modal-content bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl scale-95 transition-transform">
             <div class="flex justify-between items-center p-5 border-b border-zinc-100">
-                <h3 class="text-lg font-bold text-zinc-800">รายละเอียดใบงานนักเรียน</h3>
-                <button onclick="closeTeacherModal()" class="text-zinc-400 hover:text-zinc-700 bg-zinc-100 hover:bg-zinc-200 p-1.5 rounded-lg transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
+                <h3 class="text-lg font-bold text-zinc-800">รายละเอียดใบงาน</h3>
+                <button onclick="closeTeacherModal()" class="text-zinc-400 hover:text-zinc-700 bg-zinc-100 p-1.5 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
-            <div class="p-6 overflow-y-auto bg-zinc-50/50" id="teacher-modal-body">
-                <!-- Injected via JS -->
-            </div>
+            <div class="p-6 overflow-y-auto bg-zinc-50/50" id="teacher-modal-body"></div>
             <div class="p-5 border-t border-zinc-100 flex justify-end gap-3 bg-white rounded-b-2xl">
-                <button onclick="closeTeacherModal()" class="px-5 py-2.5 rounded-xl border border-zinc-200 text-zinc-600 hover:bg-zinc-50 font-medium transition-colors">ปิด</button>
-                <button onclick="printWorksheet()" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-sm transition-colors flex items-center">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2-2v4h10z"></path></svg> บันทึก PDF / พิมพ์
-                </button>
+                <button onclick="closeTeacherModal()" class="px-5 py-2.5 rounded-xl border text-zinc-600">ปิด</button>
+                <button onclick="printWorksheet()" class="px-5 py-2.5 rounded-xl bg-blue-600 text-white flex items-center">พิมพ์ PDF</button>
             </div>
         </div>
     </div>
 
-    <!-- Content Modal (Exhibition Detail) -->
-    <div id="modal-overlay" class="modal-overlay fixed inset-0 bg-black/80 backdrop-blur-md flex justify-center items-center p-4 sm:p-6 no-print opacity-0 invisible z-[100] transition-all">
+    <!-- Fullscreen Content/Poster Modal -->
+    <div id="modal-overlay" class="modal-overlay fixed inset-0 bg-black/90 backdrop-blur-md flex justify-center items-center p-4 no-print opacity-0 invisible z-[100] transition-all">
         <div class="modal-content bg-zinc-900 border border-white/10 rounded-3xl max-w-5xl w-full max-h-[90vh] flex flex-col lg:flex-row relative shadow-2xl overflow-hidden scale-95 transition-transform">
-            <button onclick="closeModal()" class="absolute top-4 right-4 w-10 h-10 bg-black/50 hover:bg-amber-500 text-white hover:text-black rounded-full flex justify-center items-center transition-colors z-50 border border-white/10">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
+            <button onclick="closeModal()" class="absolute top-4 right-4 w-10 h-10 bg-black/50 hover:bg-amber-500 text-white hover:text-black rounded-full flex justify-center items-center z-50 border border-white/10"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             <div id="modal-body" class="flex flex-col lg:flex-row w-full h-full overflow-y-auto lg:overflow-hidden"></div>
         </div>
     </div>
 
     <script>
-        let worksheetSubmissions = []; 
-        let posterSubmissions = []; // เก็บข้อมูลแกลเลอรี
-        let currentViewingWorksheet = null; 
+        // --- Data State (In-Memory Database) ---
         let currentUserName = ""; 
         let currentRole = "";
+        let currentQuizType = ""; // 'pre' or 'post'
+        let currentViewingWorksheet = null;
+        let currentViewingType = ""; // 'indiv' or 'group'
 
+        let studentsData = {}; // { name: { preTest: null, postTest: null, class: "", num: "" } }
+        let indivSubmissions = []; 
+        let groupSubmissions = []; 
+        let posterSubmissions = []; 
+
+        let quizQuestions = [
+            { q: "ดินแดนเมโสโปเตเมียตั้งอยู่บริเวณลุ่มแม่น้ำใด?", options: ["แม่น้ำไนล์", "แม่น้ำไทกริส-ยูเฟรติส", "แม่น้ำฮวงโห", "แม่น้ำสินธุ"], ans: 1 },
+            { q: "ชนชาติแรกที่สร้างอารยธรรมในเมโสโปเตเมียคือใคร?", options: ["ชาวอัสซีเรียน", "ชาวบาบิโลน", "ชาวสุเมเรียน", "ชาวแอกแคด"], ans: 2 },
+            { q: "อักษรที่เก่าแก่ที่สุดในโลกที่จารึกบนดินเหนียวคืออักษรใด?", options: ["อักษรคูนิฟอร์ม", "อักษรเฮียโรกลิฟิก", "อักษรโรมัน", "อักษรพราหมี"], ans: 0 },
+            { q: "สถาปัตยกรรมใดที่เป็นศาสนสถานของชาวสุเมเรียน?", options: ["พีระมิด", "วิหารพาร์เธนอน", "ซิกกูแรต", "โคลอสเซียม"], ans: 2 },
+            { q: "กฎหมายที่ยึดหลัก 'ตาต่อตา ฟันต่อฟัน' เป็นผลงานของกษัตริย์องค์ใด?", options: ["พระเจ้าอโศกมหาราช", "พระเจ้าอเล็กซานเดอร์", "พระเจ้าฮัมมูราบี", "จิ๋นซีฮ่องเต้"], ans: 2 }
+        ];
+
+        // --- Core Functions ---
         function switchScreen(screenId) {
             document.querySelectorAll('.app-screen').forEach(el => el.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
@@ -546,15 +675,13 @@
                 nav.classList.add('hidden');
             } else {
                 nav.classList.remove('hidden');
-                
-                // Show/Hide Student Menu based on role
                 if (currentRole === 'student') {
                     studentMenu.classList.replace('hidden', 'flex');
+                    checkUnlockProgress();
                 } else {
                     studentMenu.classList.replace('flex', 'hidden');
                 }
 
-                // Nav styling based on screen background
                 if(screenId === 'screen-teacher') {
                     nav.classList.replace('bg-zinc-950/80', 'bg-white/90');
                     nav.classList.replace('border-white/10', 'border-zinc-200');
@@ -564,11 +691,16 @@
                     nav.classList.replace('bg-white/90', 'bg-zinc-950/80');
                     nav.classList.replace('border-zinc-200', 'border-white/10');
                     document.getElementById('nav-user-name').classList.replace('text-zinc-800', 'text-zinc-300');
+                    document.getElementById('nav-user-icon').classList.replace('text-black', 'text-white');
                 }
             }
-
             if (screenId === 'screen-teacher') loadTeacherData();
             if (screenId === 'screen-gallery') loadGalleryData();
+        }
+
+        function goHome() {
+            if(currentRole === 'teacher') switchScreen('screen-teacher');
+            else if(currentRole === 'student') switchScreen('screen-exhibition');
         }
 
         function toggleLoginTab(role) {
@@ -578,38 +710,42 @@
             const formT = document.getElementById('form-teacher');
 
             if(role === 'student') {
-                btnS.className = "flex-1 py-2 text-sm font-medium rounded-lg bg-zinc-800 text-white shadow transition-all";
-                btnT.className = "flex-1 py-2 text-sm font-medium rounded-lg text-zinc-400 hover:text-white transition-all";
+                btnS.className = "flex-1 py-2 text-sm font-medium rounded-lg bg-zinc-800 text-white shadow";
+                btnT.className = "flex-1 py-2 text-sm font-medium rounded-lg text-zinc-400 hover:text-white";
                 formS.classList.remove('hidden'); formT.classList.add('hidden');
             } else {
-                btnT.className = "flex-1 py-2 text-sm font-medium rounded-lg bg-zinc-800 text-white shadow transition-all";
-                btnS.className = "flex-1 py-2 text-sm font-medium rounded-lg text-zinc-400 hover:text-white transition-all";
+                btnT.className = "flex-1 py-2 text-sm font-medium rounded-lg bg-zinc-800 text-white shadow";
+                btnS.className = "flex-1 py-2 text-sm font-medium rounded-lg text-zinc-400 hover:text-white";
                 formT.classList.remove('hidden'); formS.classList.add('hidden');
             }
         }
 
-        function handleEnter(e, role) {
-            if (e.key === 'Enter') loginAs(role);
-        }
+        function handleEnter(e, role) { if (e.key === 'Enter') loginAs(role); }
 
         function loginAs(role) {
             currentRole = role;
             if (role === 'student') {
                 const name = document.getElementById('login-student-name').value.trim();
-                if (!name) {
-                    return Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณากรอกชื่อก่อนเข้าเรียนครับ', confirmButtonColor: '#f59e0b' });
-                }
+                if (!name) return Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณากรอกชื่อก่อนเข้าเรียนครับ' });
                 
                 currentUserName = name;
                 document.getElementById('nav-user-name').innerText = name;
-                document.getElementById('nav-user-icon').innerText = "🎓";
-                document.getElementById('ws-name').value = name; 
-                switchScreen('screen-exhibition');
+                document.getElementById('ws-indiv-name').value = name; 
+                document.getElementById('ws-group-name').value = name; 
+
+                // Init student data if new
+                if(!studentsData[name]) {
+                    studentsData[name] = { preTest: null, postTest: null, class: "-", num: "-" };
+                }
+
+                if(studentsData[name].preTest === null) {
+                    startQuiz('pre');
+                } else {
+                    switchScreen('screen-exhibition');
+                }
             } else {
                 const pass = document.getElementById('login-teacher-pass').value;
-                if (pass !== '1234') {
-                    return Swal.fire({ icon: 'error', title: 'ผิดพลาด', text: 'รหัสผ่านไม่ถูกต้อง', confirmButtonColor: '#3b82f6' });
-                }
+                if (pass !== '1234') return Swal.fire({ icon: 'error', title: 'ผิดพลาด', text: 'รหัสผ่านไม่ถูกต้อง' });
                 
                 document.getElementById('login-teacher-pass').value = ''; 
                 currentUserName = "Teacher Admin";
@@ -620,505 +756,516 @@
         }
 
         function logout() {
-            currentUserName = "";
+            currentUserName = ""; currentRole = "";
             document.getElementById('login-student-name').value = "";
             switchScreen('screen-login');
         }
 
-        function submitWorksheet(e) {
-            e.preventDefault();
+        function checkUnlockProgress() {
+            if(currentRole !== 'student') return;
+            const hasIndiv = indivSubmissions.some(w => w.name === currentUserName);
+            const hasGroup = groupSubmissions.some(w => w.name === currentUserName);
+            const hasPost = posterSubmissions.some(p => p.studentName === currentUserName);
+            const btnPost = document.getElementById('btn-do-posttest');
             
-            const data = {
-                id: Date.now().toString(),
-                studentName: document.getElementById('ws-name').value,
-                studentClass: document.getElementById('ws-class').value,
-                studentNumber: document.getElementById('ws-number').value,
-                q1: document.getElementById('ws-q1').value,
-                q2: document.getElementById('ws-q2').value,
-                q3: document.getElementById('ws-q3').value,
-                timestamp: new Date(),
-                isChecked: false, // Default status
-                score: null // เก็บคะแนน
-            };
+            if (studentsData[currentUserName].postTest !== null) {
+                btnPost.className = "w-full bg-green-600 text-white font-bold py-3 rounded-xl";
+                btnPost.innerHTML = `✅ ทดสอบแล้ว (${studentsData[currentUserName].postTest}/5)`;
+                btnPost.disabled = true;
+            } else if (hasIndiv && hasGroup && hasPost) {
+                btnPost.className = "w-full bg-green-500 hover:bg-green-400 text-white font-bold py-3 rounded-xl transition-all shadow-lg animate-pulse";
+                btnPost.innerHTML = "📝 ทำแบบทดสอบหลังเรียน";
+                btnPost.disabled = false;
+            } else {
+                btnPost.className = "w-full bg-zinc-700 text-zinc-400 font-bold py-3 rounded-xl cursor-not-allowed";
+                btnPost.innerHTML = "🔒 ล็อก (ทำเมื่อส่งงานครบ)";
+                btnPost.disabled = true;
+            }
+        }
 
-            worksheetSubmissions.push(data);
+        // --- Quiz System ---
+        function startQuiz(type) {
+            currentQuizType = type;
+            document.getElementById('quiz-badge').innerText = type === 'pre' ? 'PRE-TEST' : 'POST-TEST';
+            document.getElementById('quiz-title').innerText = type === 'pre' ? 'แบบทดสอบก่อนเรียน' : 'แบบทดสอบหลังเรียน';
+            
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+            
+            quizQuestions.forEach((q, idx) => {
+                let optionsHtml = '';
+                q.options.forEach((opt, optIdx) => {
+                    optionsHtml += `
+                        <label class="flex items-center p-3 rounded-xl border border-zinc-700 hover:bg-zinc-800 cursor-pointer transition-colors">
+                            <input type="radio" name="q${idx}" value="${optIdx}" class="mr-3 w-4 h-4 text-amber-500 bg-zinc-700 border-zinc-600 focus:ring-amber-500">
+                            <span class="text-zinc-300 text-sm md:text-base">${escapeHtml(opt)}</span>
+                        </label>`;
+                });
+                
+                container.innerHTML += `
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5">
+                        <p class="text-white font-medium mb-4">${idx+1}. ${escapeHtml(q.q)}</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${optionsHtml}</div>
+                    </div>`;
+            });
+            switchScreen('screen-quiz');
+        }
+
+        function submitQuiz() {
+            let score = 0;
+            let allAnswered = true;
+            for(let i=0; i<quizQuestions.length; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                if(!selected) { allAnswered = false; break; }
+                if(parseInt(selected.value) === quizQuestions[i].ans) score++;
+            }
+
+            if(!allAnswered) return Swal.fire({ icon: 'warning', text: 'กรุณาตอบคำถามให้ครบทุกข้อครับ' });
+
+            if(currentQuizType === 'pre') studentsData[currentUserName].preTest = score;
+            else studentsData[currentUserName].postTest = score;
 
             Swal.fire({
-                icon: 'success',
-                title: 'ส่งใบงานสำเร็จ!',
-                text: 'ระบบบันทึกข้อมูลของคุณแล้ว ยอดเยี่ยมมาก!',
-                confirmButtonColor: '#f59e0b'
+                icon: 'success', title: 'ส่งคำตอบสำเร็จ!', text: `คุณทำได้ ${score} / 5 คะแนน`, confirmButtonColor: '#f59e0b'
             }).then(() => {
-                // Reset form partially
-                document.getElementById('ws-q1').value = '';
-                document.getElementById('ws-q2').value = '';
-                document.getElementById('ws-q3').value = '';
+                switchScreen('screen-exhibition');
+            });
+        }
+
+        // --- Work & Poster ---
+        function submitWorksheetIndiv(e) {
+            e.preventDefault();
+            const wsClass = document.getElementById('ws-indiv-class').value;
+            const wsName = document.getElementById('ws-indiv-name').value;
+            const wsNum = document.getElementById('ws-indiv-num').value;
+
+            indivSubmissions = indivSubmissions.filter(w => w.name !== wsName);
+
+            indivSubmissions.push({
+                id: 'indiv_'+Date.now(), class: wsClass, name: wsName, num: wsNum,
+                q1: document.getElementById('ws-indiv-q1').value, 
+                q2: document.getElementById('ws-indiv-q2').value, 
+                q3: document.getElementById('ws-indiv-q3').value,
+                q4: document.getElementById('ws-indiv-q4').value,
+                timestamp: new Date(), isChecked: false, score: null
+            });
+
+            studentsData[wsName].class = wsClass;
+            studentsData[wsName].num = wsNum;
+            
+            Swal.fire({ icon: 'success', title: 'ส่งใบงานเดี่ยวสำเร็จ!' }).then(() => {
+                document.getElementById('ws-indiv-q1').value = ''; document.getElementById('ws-indiv-q2').value = ''; 
+                document.getElementById('ws-indiv-q3').value = ''; document.getElementById('ws-indiv-q4').value = '';
+                switchScreen('screen-exhibition');
+            });
+        }
+
+        function submitWorksheetGroup(e) {
+            e.preventDefault();
+            const wsName = document.getElementById('ws-group-name').value;
+            const wsGroup = document.getElementById('ws-group-id').value;
+
+            groupSubmissions = groupSubmissions.filter(w => w.name !== wsName);
+
+            groupSubmissions.push({
+                id: 'group_'+Date.now(), name: wsName, group: wsGroup,
+                q1: document.getElementById('ws-group-q1').value, 
+                timestamp: new Date(), isChecked: false, score: null
+            });
+
+            Swal.fire({ icon: 'success', title: 'ส่งใบงานกลุ่มสำเร็จ!' }).then(() => {
+                document.getElementById('ws-group-q1').value = '';
                 switchScreen('screen-exhibition');
             });
         }
 
         function updateFileName(input) {
             const display = document.getElementById('file-name-display');
-            if (input.files && input.files[0]) {
-                display.innerHTML = `<span class="text-amber-400 font-bold">${input.files[0].name}</span>`;
-            } else {
-                display.innerHTML = `<span class="font-semibold">คลิกเพื่อเลือกไฟล์</span> หรือลากไฟล์มาวาง`;
-            }
+            if (input.files && input.files[0]) display.innerHTML = `<span class="text-amber-400 font-bold">${input.files[0].name}</span>`;
+            else display.innerHTML = `<span class="font-semibold">คลิกเพื่อเลือกไฟล์</span> หรือลากไฟล์มาวาง`;
         }
 
         function submitPoster(e) {
             e.preventDefault();
             const fileInput = document.getElementById('poster-file');
             const conceptInput = document.getElementById('poster-concept');
-            
-            if (!fileInput.files || !fileInput.files[0]) {
-                return Swal.fire({ icon: 'warning', title: 'อ๊ะ!', text: 'อย่าลืมแนบไฟล์รูปภาพโปสเตอร์นะครับ', confirmButtonColor: '#9333ea' });
-            }
+            if (!fileInput.files || !fileInput.files[0]) return;
 
-            const file = fileInput.files[0];
             const reader = new FileReader();
-
             reader.onload = function(event) {
+                posterSubmissions = posterSubmissions.filter(p => p.studentName !== currentUserName); // Allow resubmit
                 posterSubmissions.push({
-                    id: Date.now().toString(),
-                    studentName: currentUserName,
-                    image: event.target.result, // Base64
-                    concept: conceptInput.value,
-                    timestamp: new Date()
+                    id: Date.now().toString(), studentName: currentUserName, image: event.target.result,
+                    concept: conceptInput.value, timestamp: new Date()
                 });
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'ส่งผลงานสำเร็จ!',
-                    text: 'โปสเตอร์ของคุณถูกนำไปจัดแสดงในนิทรรศการแล้ว',
-                    confirmButtonColor: '#9333ea'
-                }).then(() => {
-                    // Reset form
-                    fileInput.value = '';
-                    conceptInput.value = '';
-                    updateFileName(fileInput);
+                Swal.fire({ icon: 'success', title: 'ส่งผลงานสำเร็จ!' }).then(() => {
+                    fileInput.value = ''; conceptInput.value = ''; updateFileName(fileInput);
                     switchScreen('screen-gallery');
                 });
             };
-            
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(fileInput.files[0]);
         }
 
+        // --- Student Gallery ---
         function loadGalleryData() {
             const container = document.getElementById('gallery-container');
-            const emptyState = document.getElementById('gallery-empty');
-            
+            const empty = document.getElementById('gallery-empty');
             container.innerHTML = '';
             
             if (posterSubmissions.length === 0) {
-                emptyState.classList.remove('hidden');
-                return;
+                empty.classList.remove('hidden'); return;
             }
-            
-            emptyState.classList.add('hidden');
-            const sorted = [...posterSubmissions].sort((a, b) => b.timestamp - a.timestamp);
-            
-            sorted.forEach(poster => {
-                const item = document.createElement('div');
-                item.className = 'masonry-item glass-panel rounded-2xl p-4 transition-transform hover:-translate-y-2 cursor-pointer group';
-                item.setAttribute('onclick', `openPosterModal('${poster.id}')`);
-                item.innerHTML = `
-                    <div class="relative overflow-hidden rounded-xl mb-4">
-                        <img src="${poster.image}" alt="Poster" class="w-full h-auto shadow-md transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
-                            <span class="text-white font-bold text-lg flex items-center bg-amber-500/80 px-4 py-2 rounded-full"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg> คลิกเพื่อขยาย</span>
+            empty.classList.add('hidden');
+            [...posterSubmissions].sort((a, b) => b.timestamp - a.timestamp).forEach(p => {
+                container.innerHTML += `
+                    <div class="masonry-item glass-panel rounded-2xl p-4 cursor-pointer group" onclick="openPosterModal('${p.id}')">
+                        <div class="relative overflow-hidden rounded-xl mb-4">
+                            <img src="${p.image}" class="w-full h-auto transition-transform duration-500 group-hover:scale-105">
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
+                                <span class="text-white font-bold bg-amber-500/80 px-4 py-2 rounded-full">🔍 คลิกเพื่อขยาย</span>
+                            </div>
                         </div>
-                    </div>
-                    <h4 class="font-bold text-amber-400 text-lg mb-1">${escapeHtml(poster.studentName)}</h4>
-                    <p class="text-zinc-300 text-sm leading-relaxed line-clamp-2">"${escapeHtml(poster.concept)}"</p>
-                `;
-                container.appendChild(item);
+                        <h4 class="font-bold text-amber-400 mb-1">${escapeHtml(p.studentName)}</h4>
+                        <p class="text-zinc-300 text-sm line-clamp-2">"${escapeHtml(p.concept)}"</p>
+                    </div>`;
             });
         }
 
-        function openPosterModal(id) {
-            const poster = posterSubmissions.find(p => p.id === id);
-            if (!poster) return;
-
-            const body = document.getElementById('modal-body');
-            body.innerHTML = `
-                <div class="w-full flex flex-col items-center p-4 sm:p-8 bg-zinc-950 overflow-y-auto">
-                    <div class="w-full max-w-4xl flex flex-col items-center">
-                        <div class="w-full flex justify-center mb-8">
-                            <img src="${poster.image}" alt="Poster Full View" class="max-w-full max-h-[65vh] object-contain rounded-xl shadow-[0_0_40px_rgba(245,158,11,0.15)] border border-white/10">
-                        </div>
-                        <div class="text-center w-full max-w-3xl">
-                            <span class="inline-block px-4 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-500 font-bold tracking-widest text-sm mb-4 rounded-full">ผลงานการออกแบบ</span>
-                            <h2 class="text-3xl font-bold text-white mb-6">โดย: ${escapeHtml(poster.studentName)}</h2>
-                            <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-700 shadow-inner">
-                                <h3 class="text-amber-400 font-semibold mb-3 flex items-center justify-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg> แนวคิดในการออกแบบ</h3>
-                                <p class="text-zinc-300 text-lg leading-relaxed italic">"${escapeHtml(poster.concept)}"</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            const modal = document.getElementById('modal-overlay');
-            modal.classList.remove('invisible', 'opacity-0');
-            modal.firstElementChild.classList.remove('scale-95');
-            document.body.style.overflow = 'hidden';
-        }
-
+        // --- Teacher Logic ---
         function switchTeacherTab(tab) {
-            const btnW = document.getElementById('tab-btn-worksheet');
-            const btnG = document.getElementById('tab-btn-gallery');
-            const txtW = document.getElementById('tab-text-worksheet');
-            const txtG = document.getElementById('tab-text-gallery');
-            const secW = document.getElementById('teacher-worksheet-section');
-            const secG = document.getElementById('teacher-gallery-section');
-
-            if (tab === 'worksheet') {
-                secW.classList.remove('hidden');
-                secG.classList.add('hidden');
-                
-                btnW.className = "bg-blue-50 px-5 py-3 rounded-xl border border-blue-200 shadow-sm flex items-center gap-4 transition-colors";
-                txtW.className = "text-sm text-blue-700 font-medium";
-                
-                btnG.className = "bg-white hover:bg-zinc-50 px-5 py-3 rounded-xl border border-zinc-200 shadow-sm flex items-center gap-4 transition-colors";
-                txtG.className = "text-sm text-zinc-500 font-medium";
-            } else {
-                secW.classList.add('hidden');
-                secG.classList.remove('hidden');
-                
-                btnG.className = "bg-amber-50 px-5 py-3 rounded-xl border border-amber-200 shadow-sm flex items-center gap-4 transition-colors";
-                txtG.className = "text-sm text-amber-700 font-medium";
-                
-                btnW.className = "bg-white hover:bg-zinc-50 px-5 py-3 rounded-xl border border-zinc-200 shadow-sm flex items-center gap-4 transition-colors";
-                txtW.className = "text-sm text-zinc-500 font-medium";
-            }
+            ['overview', 'worksheet-indiv', 'worksheet-group', 'gallery', 'editquiz'].forEach(t => {
+                document.getElementById(`teacher-${t}-section`).classList.add('hidden');
+                let btn = document.getElementById(`tab-btn-${t}`);
+                if(btn) btn.className = "bg-white text-zinc-600 hover:bg-zinc-50 px-4 py-2.5 rounded-lg text-sm font-medium border border-zinc-200 transition-colors";
+            });
+            document.getElementById(`teacher-${tab}-section`).classList.remove('hidden');
+            let activeBtn = document.getElementById(`tab-btn-${tab}`);
+            if(activeBtn) activeBtn.className = "bg-indigo-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm";
         }
 
         function loadTeacherData() {
-            const tbody = document.getElementById('teacher-table-body');
-            document.getElementById('submission-count').innerText = worksheetSubmissions.length;
-            document.getElementById('poster-count').innerText = posterSubmissions.length;
-            
-            // Load Worksheets
-            if (worksheetSubmissions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-12 text-center text-zinc-400">ยังไม่มีใบงานส่งเข้ามาในระบบ</td></tr>';
-            } else {
-                const sorted = [...worksheetSubmissions].sort((a, b) => b.timestamp - a.timestamp);
-                tbody.innerHTML = '';
+            // Tab 1: Overview
+            const ovBody = document.getElementById('overview-table-body');
+            ovBody.innerHTML = '';
+            for (const [name, data] of Object.entries(studentsData)) {
+                const hasIndiv = indivSubmissions.some(w => w.name === name) ? '✅ ส่งแล้ว' : '❌';
+                const hasGroup = groupSubmissions.some(w => w.name === name) ? '✅ ส่งแล้ว' : '❌';
+                const hasPost = posterSubmissions.some(p => p.studentName === name) ? '✅ ส่งแล้ว' : '❌';
+                const preSc = data.preTest !== null ? data.preTest : '-';
+                const postSc = data.postTest !== null ? data.postTest : '-';
                 
-                sorted.forEach(data => {
-                    const tr = document.createElement('tr');
-                    const dateStr = data.timestamp.toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' });
-                    const scoreDisplay = data.isChecked ? `<span class="text-green-600 font-bold">${data.score}/10</span>` : '<span class="text-zinc-400">-</span>';
-                    const statusBadge = data.isChecked 
-                        ? '<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-medium">ตรวจแล้ว</span>' 
-                        : '<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded text-xs font-medium">รอตรวจ</span>';
-                    
-                    tr.className = 'hover:bg-zinc-50 transition-colors';
-                    tr.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap">${statusBadge}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-center">${scoreDisplay}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500">${dateStr}</td>
-                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-zinc-900">${escapeHtml(data.studentName)}</div></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500">ม.${escapeHtml(data.studentClass)} / ${escapeHtml(data.studentNumber)}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div class="flex justify-end gap-2">
-                                <button onclick="giveScore('${data.id}')" class="text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border border-green-200 flex items-center">
-                                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> ให้คะแนน
-                                </button>
-                                <button onclick="openTeacherModal('${data.id}', '${dateStr}')" class="text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border border-blue-200">ดูใบงาน</button>
-                                <button onclick="deleteWorksheet('${data.id}')" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-1.5 rounded-lg transition-colors border border-red-200 flex items-center justify-center" title="ลบข้อมูล">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                </button>
-                            </div>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
+                ovBody.innerHTML += `
+                    <tr class="hover:bg-zinc-50">
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="font-medium text-zinc-900">${escapeHtml(name)}</div><div class="text-xs text-zinc-500">ม.${data.class} / ${data.num}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-bold text-blue-600">${preSc}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-zinc-600">${hasIndiv}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-zinc-600">${hasGroup}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center text-sm text-zinc-600">${hasPost}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-bold text-green-600">${postSc}</td>
+                    </tr>`;
             }
 
-            // Load Posters (Teacher View)
+            // Tab 2: Indiv Worksheet
+            const indivBody = document.getElementById('teacher-table-indiv-body');
+            indivBody.innerHTML = '';
+            indivSubmissions.forEach(w => {
+                const badge = w.isChecked ? '<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">ตรวจแล้ว</span>' : '<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded text-xs">รอตรวจ</span>';
+                const score = w.isChecked ? `<span class="text-green-600 font-bold">${w.score}/10</span>` : '-';
+                
+                indivBody.innerHTML += `
+                    <tr class="hover:bg-zinc-50">
+                        <td class="px-6 py-4 whitespace-nowrap">${badge}</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">${score}</td>
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="font-medium text-zinc-900">${escapeHtml(w.name)}</div><div class="text-xs text-zinc-500 mt-1">ม.${escapeHtml(w.class)} เลขที่ ${escapeHtml(w.num)}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right">
+                            <button onclick="giveScore('${w.id}', 'indiv')" class="text-green-600 hover:text-green-800 bg-green-50 px-3 py-1.5 rounded-lg text-xs border border-green-200 mr-2 font-medium transition-colors">ให้คะแนน</button>
+                            <button onclick="openTeacherModal('${w.id}', 'indiv')" class="text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-1.5 rounded-lg text-xs border border-blue-200 mr-2 font-medium transition-colors">ดูใบงาน</button>
+                            <button onclick="deleteWorksheet('${w.id}', 'indiv')" class="text-red-500 hover:text-red-700 bg-red-50 p-1.5 rounded-lg text-xs border border-red-200 transition-colors" title="ลบ">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </td>
+                    </tr>`;
+            });
+
+            // Tab 3: Group Worksheet
+            const groupBody = document.getElementById('teacher-table-group-body');
+            groupBody.innerHTML = '';
+            groupSubmissions.forEach(w => {
+                const badge = w.isChecked ? '<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">ตรวจแล้ว</span>' : '<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded text-xs">รอตรวจ</span>';
+                const score = w.isChecked ? `<span class="text-green-600 font-bold">${w.score}/10</span>` : '-';
+                
+                groupBody.innerHTML += `
+                    <tr class="hover:bg-zinc-50">
+                        <td class="px-6 py-4 whitespace-nowrap">${badge}</td>
+                        <td class="px-6 py-4 whitespace-nowrap font-medium">${score}</td>
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="font-medium text-zinc-900">กลุ่ม: ${escapeHtml(w.group)}</div><div class="text-xs text-zinc-500 mt-1">ส่งโดย: ${escapeHtml(w.name)}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right">
+                            <button onclick="giveScore('${w.id}', 'group')" class="text-green-600 hover:text-green-800 bg-green-50 px-3 py-1.5 rounded-lg text-xs border border-green-200 mr-2 font-medium transition-colors">ให้คะแนน</button>
+                            <button onclick="openTeacherModal('${w.id}', 'group')" class="text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-1.5 rounded-lg text-xs border border-blue-200 mr-2 font-medium transition-colors">ดูใบงาน</button>
+                            <button onclick="deleteWorksheet('${w.id}', 'group')" class="text-red-500 hover:text-red-700 bg-red-50 p-1.5 rounded-lg text-xs border border-red-200 transition-colors" title="ลบ">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </td>
+                    </tr>`;
+            });
+
+            // Tab 4: Gallery
             const galleryContainer = document.getElementById('teacher-gallery-container');
             galleryContainer.innerHTML = '';
-            
             if (posterSubmissions.length === 0) {
-                galleryContainer.innerHTML = '<div class="col-span-full py-16 text-center text-zinc-400 bg-white rounded-2xl border border-zinc-200 border-dashed"><div class="text-5xl mb-3">🖼️</div><p class="text-lg font-medium">ยังไม่มีผลงานโปสเตอร์ส่งเข้ามา</p></div>';
+                galleryContainer.innerHTML = '<div class="col-span-full text-center py-10 text-zinc-500">ยังไม่มีผลงาน</div>';
             } else {
-                const sortedPosters = [...posterSubmissions].sort((a, b) => b.timestamp - a.timestamp);
-                sortedPosters.forEach(poster => {
-                    const item = document.createElement('div');
-                    item.className = 'bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden group flex flex-col hover:shadow-md transition-shadow';
-                    item.innerHTML = `
-                        <div class="relative overflow-hidden cursor-pointer bg-zinc-100 h-48 border-b border-zinc-100" onclick="openPosterModal('${poster.id}')">
-                            <img src="${poster.image}" alt="Poster" class="w-full h-full object-contain p-2 transition-transform duration-500 group-hover:scale-105">
-                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
-                                <span class="text-white font-bold text-sm flex items-center bg-amber-500/80 px-4 py-2 rounded-full shadow-lg"><svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg> นำเสนอบนจอ</span>
+                posterSubmissions.forEach(p => {
+                    galleryContainer.innerHTML += `
+                        <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-zinc-200">
+                            <img src="${p.image}" class="w-full h-48 object-cover cursor-pointer" onclick="openPosterModal('${p.id}')">
+                            <div class="p-4">
+                                <h4 class="font-bold text-zinc-800">${escapeHtml(p.studentName)}</h4>
+                                <p class="text-xs text-zinc-500 mt-1 line-clamp-2">"${escapeHtml(p.concept)}"</p>
+                                <button onclick="deletePoster('${p.id}')" class="mt-3 w-full text-red-500 hover:bg-red-50 text-xs font-medium py-2 rounded-lg transition-colors border border-red-100">ลบผลงาน</button>
                             </div>
-                        </div>
-                        <div class="p-5 flex flex-col flex-1">
-                            <h4 class="font-bold text-zinc-800 text-base mb-1 truncate">${escapeHtml(poster.studentName)}</h4>
-                            <p class="text-zinc-500 text-sm mb-4 flex-1 line-clamp-3 leading-relaxed italic">"${escapeHtml(poster.concept)}"</p>
-                            <div class="pt-3 border-t border-zinc-100 flex justify-end">
-                                <button onclick="deletePoster('${poster.id}')" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border border-red-200 flex items-center shadow-sm">
-                                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> ลบผลงาน
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                    galleryContainer.appendChild(item);
+                        </div>`;
                 });
             }
+
+            // Tab 5: Edit Quiz
+            const eqContainer = document.getElementById('edit-quiz-container');
+            eqContainer.innerHTML = '';
+            quizQuestions.forEach((q, idx) => {
+                let optionsHtml = '';
+                q.options.forEach((opt, oIdx) => {
+                    optionsHtml += `
+                        <div class="flex items-center gap-3 mb-2">
+                            <input type="radio" name="edit_ans_${idx}" value="${oIdx}" ${q.ans === oIdx ? 'checked' : ''} class="w-4 h-4 text-indigo-600">
+                            <input type="text" id="edit_opt_${idx}_${oIdx}" value="${escapeHtml(opt)}" class="teacher-input text-sm">
+                        </div>`;
+                });
+                eqContainer.innerHTML += `
+                    <div class="p-4 border border-zinc-200 rounded-xl bg-zinc-50">
+                        <label class="block font-bold text-zinc-700 mb-2">ข้อที่ ${idx+1}</label>
+                        <input type="text" id="edit_q_${idx}" value="${escapeHtml(q.q)}" class="teacher-input font-medium mb-4">
+                        <div class="pl-2">${optionsHtml}</div>
+                    </div>`;
+            });
         }
 
+        function saveQuizQuestions() {
+            for(let i=0; i<quizQuestions.length; i++) {
+                quizQuestions[i].q = document.getElementById(`edit_q_${i}`).value;
+                for(let o=0; o<4; o++) {
+                    quizQuestions[i].options[o] = document.getElementById(`edit_opt_${i}_${o}`).value;
+                }
+                const ans = document.querySelector(`input[name="edit_ans_${i}"]:checked`);
+                if(ans) quizQuestions[i].ans = parseInt(ans.value);
+            }
+            Swal.fire({icon: 'success', title: 'บันทึกสำเร็จ', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500});
+        }
+
+        // Actions
+        function giveScore(id, type) {
+            const ws = type === 'indiv' ? indivSubmissions.find(w => w.id === id) : groupSubmissions.find(w => w.id === id);
+            Swal.fire({
+                title: 'ให้คะแนนใบงาน', input: 'number', inputValue: ws.score || '', inputPlaceholder: 'เต็ม 10', showCancelButton: true,
+            }).then((res) => {
+                if(res.isConfirmed && res.value >= 0 && res.value <= 10) {
+                    ws.isChecked = true; ws.score = res.value; loadTeacherData();
+                }
+            });
+        }
+        function deleteWorksheet(id, type) {
+            Swal.fire({title:'ยืนยันลบ?', icon:'warning', showCancelButton:true}).then((res)=>{
+                if(res.isConfirmed){ 
+                    if(type === 'indiv') indivSubmissions = indivSubmissions.filter(w=>w.id!==id); 
+                    else groupSubmissions = groupSubmissions.filter(w=>w.id!==id); 
+                    loadTeacherData(); 
+                }
+            });
+        }
         function deletePoster(id) {
-            Swal.fire({
-                title: 'ยืนยันการลบโปสเตอร์?',
-                text: "ผลงานชิ้นนี้จะหายไปจากนิทรรศการและไม่สามารถกู้คืนได้!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#9ca3af',
-                confirmButtonText: 'ใช่, ลบเลย!',
-                cancelButtonText: 'ยกเลิก'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    posterSubmissions = posterSubmissions.filter(p => p.id !== id);
-                    loadTeacherData(); // อัปเดตหน้า Dashboard ครู
-                    loadGalleryData(); // อัปเดตหน้าแกลเลอรีนักเรียน
-                    Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'ลบโปสเตอร์สำเร็จ', showConfirmButton: false, timer: 1500 });
-                }
+            Swal.fire({title:'ยืนยันลบ?', icon:'warning', showCancelButton:true}).then((res)=>{
+                if(res.isConfirmed){ posterSubmissions = posterSubmissions.filter(p=>p.id!==id); loadTeacherData(); loadGalleryData(); }
             });
         }
 
-        function giveScore(id) {
-            const ws = worksheetSubmissions.find(w => w.id === id);
-            if (!ws) return;
-
-            Swal.fire({
-                title: 'ให้คะแนนใบงาน',
-                input: 'number',
-                inputLabel: 'คะแนน (เต็ม 10)',
-                inputValue: ws.score !== null ? ws.score : '',
-                inputPlaceholder: 'กรอกคะแนนที่นี่...',
-                showCancelButton: true,
-                confirmButtonColor: '#10b981',
-                confirmButtonText: 'บันทึกคะแนน',
-                cancelButtonText: 'ยกเลิก',
-                inputValidator: (value) => {
-                    if (!value) {
-                        return 'กรุณากรอกคะแนน!';
-                    }
-                    if(value < 0 || value > 10) {
-                        return 'คะแนนต้องอยู่ระหว่าง 0 - 10';
-                    }
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    ws.isChecked = true;
-                    ws.score = result.value;
-                    loadTeacherData();
-                    Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'บันทึกคะแนนสำเร็จ', showConfirmButton: false, timer: 1500 });
-                }
-            });
-        }
-
-        function deleteWorksheet(id) {
-            Swal.fire({
-                title: 'ยืนยันการลบ?',
-                text: "ข้อมูลใบงานนี้จะหายไปและไม่สามารถกู้คืนได้!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#9ca3af',
-                confirmButtonText: 'ใช่, ลบเลย!',
-                cancelButtonText: 'ยกเลิก'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    worksheetSubmissions = worksheetSubmissions.filter(w => w.id !== id);
-                    loadTeacherData();
-                    Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'ลบข้อมูลสำเร็จ', showConfirmButton: false, timer: 1500 });
-                }
-            });
-        }
-
-        function openTeacherModal(id, dateStr) {
-            const data = worksheetSubmissions.find(w => w.id === id);
-            if(!data) return;
-
-            currentViewingWorksheet = { ...data, dateStr };
-            const modal = document.getElementById('teacher-modal');
-            const body = document.getElementById('teacher-modal-body');
-            
-            const scoreBadge = data.isChecked ? `<div class="mt-2 text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg inline-block border border-blue-200">ตรวจแล้ว | คะแนน: ${data.score}/10</div>` : '';
-
-            body.innerHTML = `
-                <div class="mb-6 bg-white p-4 rounded-xl border border-zinc-200 shadow-sm flex justify-between items-center">
-                    <div>
-                        <h4 class="text-lg font-bold text-zinc-900">${escapeHtml(data.studentName)}</h4>
-                        <p class="text-zinc-500 text-sm mt-0.5">ชั้น ${escapeHtml(data.studentClass)} | เลขที่ ${escapeHtml(data.studentNumber)}</p>
-                        ${scoreBadge}
-                    </div>
-                    <div class="text-right">
-                        <span class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1">ส่งเมื่อ</span>
-                        <span class="text-sm text-zinc-700 bg-zinc-100 px-2 py-1 rounded-md">${dateStr}</span>
-                    </div>
-                </div>
+        // Print Modals
+        function openTeacherModal(id, type) {
+            currentViewingType = type;
+            if(type === 'indiv') {
+                const data = indivSubmissions.find(w => w.id === id);
+                currentViewingWorksheet = data;
                 
-                <div class="space-y-4">
-                    <div class="bg-white p-5 rounded-xl border border-zinc-200 shadow-sm">
-                        <p class="text-sm font-semibold text-zinc-800 mb-3 border-b border-zinc-100 pb-2">1. ใครคือผู้สร้าง "ซิกกูแรต" และสถานที่นี้มีความสำคัญอย่างไร?</p>
-                        <p class="text-zinc-600 whitespace-pre-wrap text-sm leading-relaxed">${escapeHtml(data.q1)}</p>
+                document.getElementById('teacher-modal-body').innerHTML = `
+                    <div class="mb-4 bg-white p-4 rounded-xl border border-zinc-200 shadow-sm flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold text-lg text-amber-600">ใบงานเดี่ยว</h4>
+                            <p class="text-sm text-zinc-600 mt-2">${escapeHtml(data.name)} (ม.${escapeHtml(data.class)} เลขที่ ${escapeHtml(data.num)})</p>
+                        </div>
+                        ${data.isChecked ? `<div class="text-lg text-green-600 font-bold bg-green-50 px-4 py-2 rounded-xl border border-green-200">คะแนน: ${data.score}/10</div>` : ''}
                     </div>
-                    <div class="bg-white p-5 rounded-xl border border-zinc-200 shadow-sm">
-                        <p class="text-sm font-semibold text-zinc-800 mb-3 border-b border-zinc-100 pb-2">2. หลักการ "ตาต่อตา ฟันต่อฟัน" ของกฎหมายฮัมมูราบี หมายถึงอะไร?</p>
-                        <p class="text-zinc-600 whitespace-pre-wrap text-sm leading-relaxed">${escapeHtml(data.q2)}</p>
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm">
+                            <p class="text-sm font-bold mb-2 text-zinc-800">1. อักษรคูนิฟอร์ม?</p><p class="text-sm text-zinc-600">${escapeHtml(data.q1)}</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm">
+                            <p class="text-sm font-bold mb-2 text-zinc-800">2. ซิกกูแรต?</p><p class="text-sm text-zinc-600">${escapeHtml(data.q2)}</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm">
+                            <p class="text-sm font-bold mb-2 text-zinc-800">3. กฎหมายฮัมมูราบี?</p><p class="text-sm text-zinc-600">${escapeHtml(data.q3)}</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm">
+                            <p class="text-sm font-bold mb-2 text-zinc-800">4. นวัตกรรมล้อ?</p><p class="text-sm text-zinc-600">${escapeHtml(data.q4)}</p>
+                        </div>
+                    </div>`;
+            } else {
+                const data = groupSubmissions.find(w => w.id === id);
+                currentViewingWorksheet = data;
+
+                // ค้นหาเพื่อนในกลุ่มที่พิมพ์เลขกลุ่มเดียวกันและกดส่งใบงานแล้ว
+                const otherMembers = groupSubmissions.filter(w => w.group === data.group && w.id !== id).map(w => w.name).join(', ');
+                const membersStr = otherMembers ? `เพื่อนในกลุ่มที่ส่งแล้ว: ${escapeHtml(otherMembers)}` : `ยังไม่มีเพื่อนในกลุ่มนี้ส่งข้อมูลเข้ามา`;
+
+                document.getElementById('teacher-modal-body').innerHTML = `
+                    <div class="mb-4 bg-white p-4 rounded-xl border border-zinc-200 shadow-sm flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold text-lg text-blue-600">กลุ่มที่ ${escapeHtml(data.group)}</h4>
+                            <p class="text-sm text-zinc-600 mt-2">ผู้ส่ง: ${escapeHtml(data.name)}</p>
+                            <p class="text-xs text-blue-500 mt-1">${membersStr}</p>
+                        </div>
+                        ${data.isChecked ? `<div class="text-lg text-green-600 font-bold bg-green-50 px-4 py-2 rounded-xl border border-green-200">คะแนน: ${data.score}/10</div>` : ''}
                     </div>
-                    <div class="bg-white p-5 rounded-xl border border-zinc-200 shadow-sm">
-                        <p class="text-sm font-semibold text-zinc-800 mb-3 border-b border-zinc-100 pb-2">3. "อักษรคูนิฟอร์ม" มีความสำคัญต่อพัฒนาการของประวัติศาสตร์โลกอย่างไร?</p>
-                        <p class="text-zinc-600 whitespace-pre-wrap text-sm leading-relaxed">${escapeHtml(data.q3)}</p>
-                    </div>
-                </div>
-            `;
+                    <div class="space-y-4">
+                        <div class="bg-blue-50 p-4 rounded-xl border border-blue-200 shadow-sm">
+                            <p class="text-sm font-bold mb-2 text-blue-800">🎨 วางแผนออกแบบโปสเตอร์</p><p class="text-sm text-blue-700 whitespace-pre-line">${escapeHtml(data.q1)}</p>
+                        </div>
+                    </div>`;
+            }
             
-            modal.classList.remove('invisible', 'opacity-0');
-            modal.firstElementChild.classList.remove('scale-95');
+            document.getElementById('teacher-modal').classList.remove('invisible', 'opacity-0');
+            document.getElementById('teacher-modal').querySelector('.modal-content').classList.remove('scale-95');
         }
-
-        function closeTeacherModal() {
-            const modal = document.getElementById('teacher-modal');
-            modal.classList.add('opacity-0');
-            modal.firstElementChild.classList.add('scale-95');
-            setTimeout(() => modal.classList.add('invisible'), 300);
+        function closeTeacherModal() { 
+            document.getElementById('teacher-modal').classList.add('invisible', 'opacity-0'); 
+            document.getElementById('teacher-modal').querySelector('.modal-content').classList.add('scale-95');
         }
-
         function printWorksheet() {
-            if (!currentViewingWorksheet) return;
-            const data = currentViewingWorksheet;
-            const printContainer = document.getElementById('printable-worksheet');
-            
-            printContainer.innerHTML = `
-                <div style="font-family: 'Sarabun', sans-serif; color: black; max-width: 800px; margin: 0 auto; padding: 20px;">
-                    <h2 style="text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 20px;">ใบงาน: อารยธรรมเมโสโปเตเมีย</h2>
-                    <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
-                        <div><strong>ชื่อ-สกุล:</strong> ${escapeHtml(data.studentName)}</div>
-                        <div><strong>ชั้น:</strong> ${escapeHtml(data.studentClass)}</div>
-                        <div><strong>เลขที่:</strong> ${escapeHtml(data.studentNumber)}</div>
-                    </div>
-                    <div style="font-size: 12px; color: #666; margin-bottom: 20px;">ส่งเมื่อ: ${data.dateStr}</div>
-                    
-                    <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                        <p style="font-weight: bold; margin-bottom: 10px;">1. ใครคือผู้สร้าง "ซิกกูแรต" และสถานที่นี้มีความสำคัญอย่างไร?</p>
-                        <p style="white-space: pre-wrap; line-height: 1.6;">${escapeHtml(data.q1)}</p>
-                    </div>
-                    
-                    <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                        <p style="font-weight: bold; margin-bottom: 10px;">2. หลักการ "ตาต่อตา ฟันต่อฟัน" ของกฎหมายฮัมมูราบี หมายถึงอะไร?</p>
-                        <p style="white-space: pre-wrap; line-height: 1.6;">${escapeHtml(data.q2)}</p>
-                    </div>
-                    
-                    <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                        <p style="font-weight: bold; margin-bottom: 10px;">3. "อักษรคูนิฟอร์ม" มีความสำคัญต่อพัฒนาการของประวัติศาสตร์โลกอย่างไร?</p>
-                        <p style="white-space: pre-wrap; line-height: 1.6;">${escapeHtml(data.q3)}</p>
-                    </div>
-                    
-                    <div style="margin-top: 40px; text-align: right; border-top: 1px dashed #ccc; padding-top: 20px;">
-                        <span style="margin-right: 50px; font-weight: bold; font-size: 16px;">คะแนน ..... ${data.score !== null && data.score !== undefined ? data.score : '   '} ..... / 10</span>
-                        <span>ผู้ตรวจ ........................................</span>
-                    </div>
-                </div>
-            `;
-            
-            printContainer.classList.remove('hidden');
+            const d = currentViewingWorksheet;
+            if(currentViewingType === 'indiv') {
+                document.getElementById('printable-worksheet').innerHTML = `
+                    <div style="font-family:Sarabun; padding:30px; max-width:800px; margin:0 auto; color:black;">
+                        <h2 style="text-align:center; margin-bottom: 5px;">ใบงานเดี่ยว: สำรวจเมโสโปเตเมีย</h2>
+                        <h3 style="text-align:center; margin-top: 0; color: #555;">${escapeHtml(d.name)} (ม.${escapeHtml(d.class)} เลขที่ ${escapeHtml(d.num)})</h3>
+                        
+                        <div style="margin-bottom: 15px;"><strong>๑. อักษรคูนิฟอร์ม (Cuneiform) มีความสำคัญต่อประวัติศาสตร์อย่างไร?</strong><br><div style="padding-left:15px; margin-top:5px; color:#333;">${escapeHtml(d.q1)}</div></div>
+                        <div style="margin-bottom: 15px;"><strong>๒. ใครคือผู้สร้าง "ซิกกูแรต" และสถานที่นี้สะท้อนความเชื่ออย่างไร?</strong><br><div style="padding-left:15px; margin-top:5px; color:#333;">${escapeHtml(d.q2)}</div></div>
+                        <div style="margin-bottom: 15px;"><strong>๓. หลักการ "ตาต่อตา ฟันต่อฟัน" ของกฎหมายฮัมมูราบี หมายถึงอะไร?</strong><br><div style="padding-left:15px; margin-top:5px; color:#333;">${escapeHtml(d.q3)}</div></div>
+                        <div style="margin-bottom: 20px;"><strong>๔. "นวัตกรรมล้อ" ของชาวสุเมเรียนคือจุดเริ่มต้นของเทคโนโลยีอะไรบ้าง?</strong><br><div style="padding-left:15px; margin-top:5px; color:#333;">${escapeHtml(d.q4)}</div></div>
+                        
+                        <div style="text-align:right; margin-top:30px; font-size: 1.2em; border: 2px solid #000; display: inline-block; padding: 10px 20px; float: right; border-radius: 10px;">
+                            <strong>คะแนนที่ได้:</strong> &nbsp;&nbsp;&nbsp;&nbsp;${d.score||'.......'} / 10
+                        </div>
+                    </div>`;
+            } else {
+                const otherMembers = groupSubmissions.filter(w => w.group === d.group && w.id !== d.id).map(w => w.name).join(', ');
+                const membersStr = otherMembers ? `เพื่อนในกลุ่มที่ส่งแล้ว: ${escapeHtml(otherMembers)}` : ``;
+
+                document.getElementById('printable-worksheet').innerHTML = `
+                    <div style="font-family:Sarabun; padding:30px; max-width:800px; margin:0 auto; color:black;">
+                        <h2 style="text-align:center; margin-bottom: 5px;">ใบงานกลุ่ม: แผนการออกแบบผลงาน</h2>
+                        <h3 style="text-align:center; margin-top: 0; color: #555;">กลุ่มที่ ${escapeHtml(d.group)}</h3>
+                        
+                        <div style="background-color: #f9f9f9; padding: 15px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 20px;">
+                            <strong>ผู้ส่ง:</strong> ${escapeHtml(d.name)}<br>
+                            ${membersStr}
+                        </div>
+
+                        <div style="border-top: 2px dashed #ccc; padding-top: 15px; margin-bottom: 30px;">
+                            <strong>🎨 วางแผนออกแบบโปสเตอร์ (Digital Scrapbook Planner)</strong><br>
+                            <div style="padding-left:15px; margin-top:10px; white-space: pre-line; color:#333;">${escapeHtml(d.q1)}</div>
+                        </div>
+
+                        <div style="text-align:right; margin-top:30px; font-size: 1.2em; border: 2px solid #000; display: inline-block; padding: 10px 20px; float: right; border-radius: 10px;">
+                            <strong>คะแนนที่ได้:</strong> &nbsp;&nbsp;&nbsp;&nbsp;${d.score||'.......'} / 10
+                        </div>
+                    </div>`;
+            }
             window.print();
-            setTimeout(() => {
-                printContainer.classList.add('hidden');
-                printContainer.innerHTML = '';
-            }, 1000);
         }
 
-        // --- Exhibition Data & Logic ---
+        // Content / Poster Modals
         const artifactData = {
-            'cuneiform': {
-                title: 'อักษรคูนิฟอร์ม', titleEng: 'Cuneiform', subtitle: 'ชาวสุเมเรียน (Sumerians)',
-                image: '1.jpg',
-                description: `
-                    <p><strong>อักษรคูนิฟอร์ม หรือ อักษรลิ่ม</strong> เป็นระบบการเขียนที่เก่าแก่ที่สุดในโลก คิดค้นโดยชาวสุเมเรียน เมื่อประมาณ 3,000 ปีก่อนคริสตกาล</p>
-                    <p>ชาวสุเมเรียนใช้ <strong>"ก้านอ้อ" (Reed)</strong> ตัดปลายให้เป็นเหลี่ยม กดทับลงบนแผ่นดินเหนียวเปียก ทำให้เกิดรอยบุ๋มคล้ายรูปลิ่ม แล้วนำไปตากหรือเผาไฟให้แข็ง แผ่นจารึกจึงคงทนมาถึงปัจจุบัน</p>
-                    <div class="bg-amber-900/20 border-l-4 border-amber-500 p-4 mt-6 rounded-r-xl">
-                        <strong class="text-amber-400 block mb-1 text-sm"><span class="mr-1">💡</span> ชวนคิดเพื่อทำใบงานและโปสเตอร์</strong>
-                        <span class="text-zinc-300 text-sm">การประดิษฐ์อักษรคือ "จุดเริ่มต้นของยุคประวัติศาสตร์" ทำให้ความรู้ กฎหมาย และเรื่องราวถูกบันทึกและส่งต่อได้โดยไม่ผิดเพี้ยน</span>
-                    </div>`
+            'cuneiform': { 
+                title: 'อักษรคูนิฟอร์ม (Cuneiform)', 
+                sub: 'ชาวสุเมเรียน', 
+                img: '1.jpg', 
+                desc: 'อักษรลิ่มหรือคูนิฟอร์ม ประดิษฐ์ขึ้นโดยชาวสุเมเรียน ถือเป็นระบบการเขียนที่เก่าแก่ที่สุดในโลก จารึกบนแผ่นดินเหนียวด้วยก้านอ้อ นำไปสู่การบันทึกประวัติศาสตร์ กฎหมาย และวรรณกรรม (เช่น มหากาพย์กิลกาเมช)',
+                prompt: 'หากโลกนี้ไม่มีการประดิษฐ์ตัวอักษร ความรู้และเทคโนโลยีในปัจจุบันจะเป็นอย่างไร?',
+                link: 'https://th.wikipedia.org/wiki/%E0%B8%AD%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B8%A3%E0%B8%84%E0%B8%B9%E0%B8%99%E0%B8%B4%E0%B8%9F%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B8%A1'
             },
-            'ziggurat': {
-                title: 'ซิกกูแรต', titleEng: 'Ziggurat', subtitle: 'สถาปัตยกรรมแห่งศรัทธา',
-                image: '2.jpg',
-                description: `
-                    <p><strong>ซิกกูแรต</strong> เป็นศาสนสถานขนาดใหญ่รูปทรงคล้ายพีระมิดขั้นบันได สร้างขึ้นใจกลางเมืองรัฐต่างๆ ในเมโสโปเตเมีย</p>
-                    <p>ดินแดนแถบนี้ไม่มีหิน จึงสร้างจาก <strong>"อิฐตากแห้ง" (Sun-baked bricks)</strong> ชาวเมโสโปเตเมียเชื่อว่าเทพเจ้าสถิตอยู่บนที่สูง ซิกกูแรตจึงถูกสร้างให้สูงตระหง่านเพื่อเป็นสะพานเชื่อมระหว่างโลกมนุษย์และสวรรค์</p>
-                    <div class="bg-amber-900/20 border-l-4 border-amber-500 p-4 mt-6 rounded-r-xl">
-                        <strong class="text-amber-400 block mb-1 text-sm"><span class="mr-1">💡</span> ชวนคิดเพื่อทำใบงานและโปสเตอร์</strong>
-                        <span class="text-zinc-300 text-sm">ผู้สร้างคือ "ชาวสุเมเรียน" สถานที่นี้เป็นทั้งศาสนสถาน ศูนย์กลางชุมชน และคลังเก็บเสบียงอาหารยามจำเป็น</span>
-                    </div>`
+            'ziggurat': { 
+                title: 'ซิกกูแรต (Ziggurat)', 
+                sub: 'สถาปัตยกรรม', 
+                img: '2.jpg', 
+                desc: 'สถาปัตยกรรมขนาดใหญ่คล้ายพีระมิดขั้นบันได สร้างด้วยอิฐตากแห้ง เป็นศูนย์กลางทางศาสนาและศูนย์รวมจิตใจของชาวสุเมเรียน บนยอดสุดเป็นวิหารสำหรับบูชาเทพเจ้าประจำเมือง',
+                prompt: 'ซิกกูแรตสะท้อนให้เห็นถึงความเชื่อและอำนาจของผู้ปกครองในสมัยนั้นอย่างไร?',
+                link: 'https://th.wikipedia.org/wiki/%E0%B8%8B%E0%B8%B4%E0%B8%81%E0%B8%81%E0%B8%B9%E0%B9%81%E0%B8%A3%E0%B8%95'
             },
-            'hammurabi': {
-                title: 'กฎหมายฮัมมูราบี', titleEng: 'Code of Hammurabi', subtitle: 'จักรวรรดิบาบิโลน',
-                image: '3.jpg',
-                description: `
-                    <p><strong>ประมวลกฎหมายฮัมมูราบี</strong> เป็นกฎหมายลายลักษณ์อักษรที่เก่าแก่และสมบูรณ์ที่สุด จารึกลงบนเสาหินบะซอลต์สีดำ</p>
-                    <p>ตราขึ้นโดยพระเจ้าฮัมมูราบี มีบทบัญญัติ 282 มาตรา ตั้งแสดงในที่สาธารณะเพื่อให้ทุกคนรู้กฎหมายอย่างเท่าเทียมกัน</p>
-                    <div class="bg-amber-900/20 border-l-4 border-amber-500 p-4 mt-6 rounded-r-xl">
-                        <strong class="text-amber-400 block mb-1 text-sm"><span class="mr-1">💡</span> ชวนคิดเพื่อทำใบงานและโปสเตอร์</strong>
-                        <span class="text-zinc-300 text-sm">หลัก "ตาต่อตา ฟันต่อฟัน" (Lex Talionis) คือการลงโทษให้ผู้กระทำผิดได้รับความเจ็บปวดหรือความเสียหายแบบเดียวกับที่ตนเองได้ก่อไว้</span>
-                    </div>`
+            'hammurabi': { 
+                title: 'กฎหมายฮัมมูราบี', 
+                sub: 'บาบิโลน', 
+                img: '3.jpg', 
+                desc: 'ประมวลกฎหมายที่เก่าแก่ที่สุดของโลก สร้างโดยกษัตริย์ฮัมมูราบีแห่งบาบิโลน จารึกบนเสาหินไดโอไรต์ ใช้หลักการ "ตาต่อตา ฟันต่อฟัน" (Lex Talionis) เพื่อสร้างความยุติธรรมและจัดระเบียบสังคม',
+                prompt: 'หลักการ "ตาต่อตา ฟันต่อฟัน" เหมาะสมกับการนำมาใช้ในกระบวนการยุติธรรมในปัจจุบันหรือไม่?',
+                link: 'https://th.wikipedia.org/wiki/%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%A1%E0%B8%A7%E0%B8%A5%E0%B8%81%E0%B8%8E%E0%B8%AB%E0%B8%A1%E0%B8%B2%E0%B8%A2%E0%B8%AE%E0%B8%B1%E0%B8%A1%E0%B8%A1%E0%B8%B9%E0%B8%A3%E0%B8%B2%E0%B8%9A%E0%B8%B5'
             },
-            'wheel': {
-                title: 'นวัตกรรมล้อ', titleEng: 'The Wheel', subtitle: 'วิทยาการที่เปลี่ยนโลก',
-                image: '4.jpg',
-                description: `
-                    <p><strong>"ล้อ" (The Wheel)</strong> ถือเป็นสิ่งประดิษฐ์ที่ยิ่งใหญ่ที่สุดอย่างหนึ่งของมนุษยชาติ ชาวสุเมเรียนประดิษฐ์ล้อไม้ เริ่มใช้เป็นแป้นหมุนช่างปั้นหม้อ ก่อนพัฒนาเป็นล้อเกวียนสำหรับการขนส่งและสงคราม</p>
-                    <p>นอกจากล้อแล้ว เมโสโปเตเมียยังโดดเด่นเรื่อง <strong>การชลประทาน</strong> การขุดคลอง ทำนบกั้นน้ำ เพื่อสู้กับสภาพอากาศแห้งแล้ง</p>
-                `
+            'wheel': { 
+                title: 'นวัตกรรมล้อ', 
+                sub: 'วิทยาการ', 
+                img: '4.jpg', 
+                desc: 'ชาวสุเมเรียนเป็นชนชาติแรกที่ประดิษฐ์ "ล้อ" เริ่มจากการทำแป้นหมุนของช่างปั้นหม้อ พัฒนาไปสู่ล้อเกวียนที่ใช้ลากจูงด้วยสัตว์ ซึ่งเป็นการปฏิวัติวงการขนส่งและวิศวกรรมของโลก',
+                prompt: 'ล้อของชาวสุเมเรียนคือจุดเริ่มต้นของเทคโนโลยีอะไรบ้างในโลกปัจจุบัน?',
+                link: 'https://th.wikipedia.org/wiki/%E0%B8%A5%E0%B9%89%E0%B8%AD'
             }
         };
 
         function openModal(id) {
-            const data = artifactData[id];
-            if (!data) return;
-            const body = document.getElementById('modal-body');
-            body.innerHTML = `
-                <div class="w-full lg:w-2/5 h-64 lg:h-auto relative shrink-0">
-                    <img src="${data.image}" alt="${data.title}" class="absolute inset-0 w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-zinc-900 to-transparent lg:hidden"></div>
-                    <div class="absolute inset-0 bg-gradient-to-r from-transparent to-zinc-900 hidden lg:block"></div>
-                </div>
-                <div class="w-full lg:w-3/5 p-8 lg:p-12 flex flex-col justify-center bg-zinc-900 overflow-y-auto">
-                    <span class="inline-block px-3 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-500 font-bold uppercase tracking-widest text-xs mb-4 rounded-full w-max">${data.subtitle}</span>
-                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-2">${data.title}</h2>
-                    <h3 class="text-zinc-500 text-lg title-font mb-8">${data.titleEng}</h3>
-                    <div class="text-zinc-300 text-base leading-relaxed space-y-4">${data.description}</div>
-                </div>
-            `;
-            const modal = document.getElementById('modal-overlay');
-            modal.classList.remove('invisible', 'opacity-0');
-            modal.firstElementChild.classList.remove('scale-95');
-            document.body.style.overflow = 'hidden';
+            const d = artifactData[id];
+            document.getElementById('modal-body').innerHTML = `
+                <div class="w-full lg:w-2/5 h-64 lg:h-auto relative"><img src="${d.img}" class="w-full h-full object-cover"></div>
+                <div class="w-full lg:w-3/5 p-8 flex flex-col justify-center bg-zinc-900">
+                    <span class="text-amber-500 font-bold mb-2 uppercase tracking-wider text-sm border border-amber-500/30 w-max px-3 py-1 rounded-full bg-amber-500/10">${d.sub}</span>
+                    <h2 class="text-3xl md:text-4xl text-white font-bold mb-6">${d.title}</h2>
+                    <p class="text-zinc-300 text-lg leading-relaxed mb-6">${d.desc}</p>
+                    
+                    <div class="bg-amber-500/10 border border-amber-500/30 p-5 rounded-xl mb-8 relative overflow-hidden group">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
+                        <h4 class="text-amber-400 font-bold mb-2 flex items-center"><span class="mr-2 text-xl">💡</span> ชวนคิดเพื่อสร้างสรรค์ผลงาน</h4>
+                        <p class="text-zinc-300 italic text-sm md:text-base">"${d.prompt}"</p>
+                    </div>
+
+                    <a href="${d.link}" target="_blank" class="inline-flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 text-white font-medium py-3 px-6 rounded-xl transition-colors border border-zinc-700 w-max group shadow-lg">
+                        <span>อ่านข้อมูลเพิ่มเติมจากวิกิพีเดีย</span>
+                        <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    </a>
+                </div>`;
+            document.getElementById('modal-overlay').classList.remove('invisible', 'opacity-0');
         }
 
-        function closeModal() {
-            const modal = document.getElementById('modal-overlay');
-            modal.classList.add('opacity-0');
-            modal.firstElementChild.classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('invisible');
-                document.body.style.overflow = '';
-                document.getElementById('modal-body').innerHTML = '';
-            }, 300); 
+        function openPosterModal(id) {
+            const p = posterSubmissions.find(x => x.id === id);
+            document.getElementById('modal-body').innerHTML = `
+                <div class="w-full flex flex-col items-center p-8 bg-zinc-950 overflow-y-auto">
+                    <img src="${p.image}" class="max-h-[60vh] object-contain rounded-xl shadow-lg border border-white/10 mb-6">
+                    <div class="text-center w-full max-w-2xl">
+                        <h2 class="text-2xl font-bold text-white mb-4">ผลงาน: ${escapeHtml(p.studentName)}</h2>
+                        <div class="bg-zinc-900 p-5 rounded-xl border border-zinc-700">
+                            <h3 class="text-amber-400 font-semibold mb-2">แนวคิด:</h3><p class="text-zinc-300 italic">"${escapeHtml(p.concept)}"</p>
+                        </div>
+                    </div>
+                </div>`;
+            document.getElementById('modal-overlay').classList.remove('invisible', 'opacity-0');
         }
-
-        function escapeHtml(text) {
-            if(!text) return "";
-            return (text+"").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-        }
+        function closeModal() { document.getElementById('modal-overlay').classList.add('invisible', 'opacity-0'); }
+        function escapeHtml(text) { return (text||"").toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
     </script>
 </body>
 </html>
